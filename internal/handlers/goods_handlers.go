@@ -2,12 +2,13 @@ package handlers
 
 import (
 	"fmt"
-	"go1/internal/commander"
-	"go1/internal/storage"
 	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
+
+	"Catalog/internal/commander"
+	"Catalog/internal/storage"
 )
 
 const (
@@ -21,6 +22,9 @@ var BadArgument = errors.New("bad argument")
 
 func listGoods(_ string) string {
 	data := storage.List()
+	if len(data) == 0 {
+		return "Список пуст"
+	}
 	res := make([]string, len(data))
 	for _, x := range data {
 		res = append(res, x.String())
@@ -33,7 +37,7 @@ func addGoods(arg string) string {
 	if len(params) != 3 {
 		return errors.Wrapf(BadArgument, "%d items <%v>", len(params), params).Error()
 	}
-	g, err := storage.NewGoods(params[0], params[1], params[2])
+	g, err := storage.NewGood(params[0], params[1], params[2])
 	if err != nil {
 		return err.Error()
 	}

@@ -1,4 +1,4 @@
-module go1
+module Catalog
 
 go 1.18
 

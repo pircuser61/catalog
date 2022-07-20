@@ -6,15 +6,15 @@ import (
 
 var lastCode uint64
 
-type Goods struct {
-	code    uint64
-	name    string
-	uom     string
-	country string
+type Good struct {
+	code          uint64
+	name          string
+	unitOfMeasure string
+	country       string
 }
 
-func NewGoods(name, uom, country string) (*Goods, error) {
-	g := Goods{}
+func NewGood(name, uom, country string) (*Good, error) {
+	g := Good{}
 	if err := g.SetFields(name, uom, country); err != nil {
 		return nil, err
 	}
@@ -23,12 +23,12 @@ func NewGoods(name, uom, country string) (*Goods, error) {
 	return &g, nil
 }
 
-func (g *Goods) SetFields(name, uom, country string) error {
+func (g *Good) SetFields(name, uom, country string) error {
 	if err := g.SetName(name); err != nil {
 		return err
 	}
 
-	if err := g.SetUom(uom); err != nil {
+	if err := g.SetUnitOfMeasure(uom); err != nil {
 		return err
 	}
 
@@ -38,11 +38,11 @@ func (g *Goods) SetFields(name, uom, country string) error {
 	return nil
 }
 
-func (g *Goods) String() string {
-	return fmt.Sprintf("%d %s (%s) %s", g.GetCode(), g.GetName(), g.GetUom(), g.GetCountry())
+func (g *Good) String() string {
+	return fmt.Sprintf("%d %s (%s) %s", g.GetCode(), g.GetName(), g.GetUnitOfMeasure(), g.GetCountry())
 }
 
-func (g *Goods) SetName(name string) error {
+func (g *Good) SetName(name string) error {
 	if len(name) < 3 || len(name) > 40 {
 		return fmt.Errorf("bad name <%v>", name)
 	}
@@ -50,15 +50,15 @@ func (g *Goods) SetName(name string) error {
 	return nil
 }
 
-func (g *Goods) SetUom(uom string) error {
+func (g *Good) SetUnitOfMeasure(uom string) error {
 	if len(uom) > 10 {
 		return fmt.Errorf("bad unit of measure <%v>", uom)
 	}
-	g.uom = uom
+	g.unitOfMeasure = uom
 	return nil
 }
 
-func (g *Goods) SetCountry(country string) error {
+func (g *Good) SetCountry(country string) error {
 	if len(country) < 3 || len(country) > 20 {
 		return fmt.Errorf("bad country <%v>", country)
 	}
@@ -66,18 +66,18 @@ func (g *Goods) SetCountry(country string) error {
 	return nil
 }
 
-func (g *Goods) GetCode() uint64 {
+func (g *Good) GetCode() uint64 {
 	return g.code
 }
 
-func (g *Goods) GetName() string {
+func (g *Good) GetName() string {
 	return g.name
 }
 
-func (g *Goods) GetUom() string {
-	return g.uom
+func (g *Good) GetUnitOfMeasure() string {
+	return g.unitOfMeasure
 }
 
-func (g *Goods) GetCountry() string {
+func (g *Good) GetCountry() string {
 	return g.country
 }

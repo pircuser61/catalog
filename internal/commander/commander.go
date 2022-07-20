@@ -2,12 +2,12 @@ package commander
 
 import (
 	"fmt"
-	"go1/config"
-	"log"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/pkg/errors"
+
+	"Catalog/config"
 )
 
 const (
@@ -29,12 +29,16 @@ var UnknownCommand = errors.New("Unknown command, /help for help")
 func Init() (*Commander, error) {
 	route = make(map[string]CmdHandler)
 
-	bot, err := tgbotapi.NewBotAPI(config.ApiKey)
+	cfg, err := config.GetConfig()
+	if err != nil {
+		return nil, errors.Wrap(err, "Init tgbot config")
+	}
+
+	bot, err := tgbotapi.NewBotAPI(cfg.ApiKey)
 	if err != nil {
 		return nil, errors.Wrap(err, "Init tgbot")
 	}
-	bot.Debug = true
-	log.Printf("Authorized on account %s", bot.Self.UserName)
+	bot.Debug = cfg.Debug
 	cmr := &Commander{bot}
 	cmr.Register(help, getHelp, "help")
 	return cmr, nil
@@ -49,8 +53,6 @@ func (cmd *Commander) Run() error {
 	updateConfig.Timeout = 60
 	updatesChannel := cmd.bot.GetUpdatesChan(updateConfig)
 	for update := range updatesChannel {
-		//log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-
 		if update.Message == nil {
 			continue
 		}
@@ -76,11 +78,9 @@ func (cmd *Commander) Run() error {
 func getHelp(_ string) string {
 	res := make([]string, 0, len(route))
 	for key, x := range route {
-
 		if key != help {
 			res = append(res, x.help)
 		}
-
 	}
 	return strings.Join(res, "\n")
 }

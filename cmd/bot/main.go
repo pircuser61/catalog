@@ -1,9 +1,10 @@
 package main
 
 import (
-	"go1/internal/commander"
-	"go1/internal/handlers"
 	"log"
+
+	"Catalog/internal/commander"
+	"Catalog/internal/handlers"
 )
 
 func main() {
