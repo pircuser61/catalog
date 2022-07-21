@@ -7,8 +7,8 @@ import (
 
 	"github.com/pkg/errors"
 
-	"Catalog/internal/commander"
-	"Catalog/internal/storage"
+	"gitlab.ozon.dev/pircuser61/catalog/internal/commander"
+	"gitlab.ozon.dev/pircuser61/catalog/internal/storage"
 )
 
 const (

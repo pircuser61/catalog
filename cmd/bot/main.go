@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"Catalog/internal/commander"
-	"Catalog/internal/handlers"
+	"gitlab.ozon.dev/pircuser61/catalog/internal/commander"
+	"gitlab.ozon.dev/pircuser61/catalog/internal/handlers"
 )
 
 func main() {

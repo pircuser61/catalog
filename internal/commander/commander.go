@@ -7,7 +7,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/pkg/errors"
 
-	"Catalog/config"
+	"gitlab.ozon.dev/pircuser61/catalog/config"
 )
 
 const (
