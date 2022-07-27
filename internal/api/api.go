@@ -28,7 +28,7 @@ func (i *implementation) GoodCreate(_ context.Context, in *pb.GoodCreateRequest)
 		UnitOfMeasure: in.GetUnitOfMeasure(),
 		Country:       in.GetCountry(),
 	}); err != nil {
-		if errors.Is(err, goodPkg.ErrValidation) {
+		if errors.Is(err, models.ErrValidation) {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
 		return nil, status.Error(codes.Internal, err.Error())
@@ -42,7 +42,7 @@ func (i *implementation) GoodUpdate(_ context.Context, in *pb.GoodUpdateRequest)
 		Name:          in.GetName(),
 		UnitOfMeasure: in.GetUnitOfMeasure(),
 		Country:       in.GetCountry()}); err != nil {
-		if errors.Is(err, goodPkg.ErrValidation) {
+		if errors.Is(err, models.ErrValidation) {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
 		if errors.Is(err, goodPkg.ErrNotFound) {
@@ -55,7 +55,7 @@ func (i *implementation) GoodUpdate(_ context.Context, in *pb.GoodUpdateRequest)
 
 func (i *implementation) GoodDelete(_ context.Context, in *pb.GoodDeleteRequest) (*pb.GoodDeleteResponse, error) {
 	if err := i.good.Delete(in.GetCode()); err != nil {
-		if errors.Is(err, goodPkg.ErrValidation) {
+		if errors.Is(err, models.ErrValidation) {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
 		if errors.Is(err, goodPkg.ErrNotFound) {

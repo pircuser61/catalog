@@ -1,6 +1,12 @@
 package models
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/pkg/errors"
+)
+
+var ErrValidation = errors.New("invalid data")
 
 type Good struct {
 	Code          uint64
@@ -20,21 +26,21 @@ func (g *Good) SetCode(code uint64) error {
 
 func (g Good) Validate() error {
 	if len(g.Name) < 3 || len(g.Name) > 40 {
-		return fmt.Errorf("bad name <%v>", g.Name)
+		return errors.WithMessagef(ErrValidation, "bad name <%v>", g.Name)
 	}
 
 	if len(g.UnitOfMeasure) > 10 {
-		return fmt.Errorf("bad unit of measure <%v>", g.UnitOfMeasure)
+		return errors.WithMessagef(ErrValidation, "bad unit of measure <%v>", g.UnitOfMeasure)
 	}
 
 	if len(g.Country) < 3 || len(g.Country) > 20 {
-		return fmt.Errorf("bad country <%v>", g.Country)
+		return errors.WithMessagef(ErrValidation, "bad country <%v>", g.Country)
 	}
 	return nil
 }
 
 func (g *Good) String() string {
-	return fmt.Sprintf("%d %s (%s) %s", g.GetCode(), g.GetName(), g.GetUnitOfMeasure(), g.GetCountry())
+	return fmt.Sprintf("%d %s", g.GetCode(), g.GetName())
 }
 
 func (g *Good) GetName() string {

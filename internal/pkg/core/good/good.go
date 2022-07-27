@@ -14,13 +14,13 @@ type Interface interface {
 	Delete(uint64) error
 	Get(uint64) (*models.Good, error)
 	List() []models.Good
+	GetCache() cachePkg.Interface
 }
 
 type core struct {
 	cache cachePkg.Interface
 }
 
-var ErrValidation = errors.New("invalid data")
 var ErrNotFound = errors.New("good not found")
 
 func New() Interface {
@@ -63,4 +63,8 @@ func (c *core) Delete(code uint64) error {
 
 func (c *core) List() []models.Good {
 	return c.cache.List()
+}
+
+func (c *core) GetCache() cachePkg.Interface {
+	return c.cache
 }

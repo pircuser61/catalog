@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"google.golang.org/grpc"
@@ -47,7 +48,6 @@ func main() {
 				fmt.Println(err.Error())
 				continue
 			}
-
 		case "add":
 			params := strings.Split(line, " ")
 			if len(params) != 4 {
@@ -63,26 +63,63 @@ func main() {
 				continue
 			}
 		case "update":
-			/*
-				params := strings.Split(line, " ")
-				if len(params) != 5 {
-					fmt.Printf("invalid args %d items <%v>", len(params), params)
-					continue
-				}
-				request := pb.GoodUpdateRequest{Code: params[1], Name: params[2], UnitOfMeasure: params[3], Country: params[4]}
-				response, err := client.GoodCreate(ctx, &request)
-				if err == nil {
-					fmt.Printf("response: [%v]", response)
-				} else {
-					fmt.Println(err.Error())
-					continue
-				}*/
+			params := strings.Split(line, " ")
+			if len(params) != 5 {
+				fmt.Printf("invalid args %d items <%v>", len(params), params)
+				continue
+			}
+			code, err := strconv.ParseUint(params[1], 10, 64)
+			if err != nil {
+				fmt.Println("<code> must be a number")
+				continue
+			}
+			request := pb.GoodUpdateRequest{Code: code, Name: params[2], UnitOfMeasure: params[3], Country: params[4]}
+			response, err := client.GoodUpdate(ctx, &request)
+			if err == nil {
+				fmt.Printf("response: [%v]", response)
+			} else {
+				fmt.Println(err.Error())
+				continue
+			}
 		case "get":
+			params := strings.Split(line, " ")
+			if len(params) != 2 {
+				fmt.Printf("invalid args %d items <%v>", len(params), params)
+				continue
+			}
+			code, err := strconv.ParseUint(params[1], 10, 64)
+			if err != nil {
+				fmt.Println("<code> must be a number")
+				continue
+			}
+			response, err := client.GoodGet(ctx, &pb.GoodGetRequest{Code: code})
+			if err == nil {
+				fmt.Printf("response: [%v]", response)
+			} else {
+				fmt.Println(err.Error())
+				continue
+			}
 		case "delete":
+			params := strings.Split(line, " ")
+			if len(params) != 2 {
+				fmt.Printf("invalid args %d items <%v>", len(params), params)
+				continue
+			}
+			code, err := strconv.ParseUint(params[1], 10, 64)
+			if err != nil {
+				fmt.Println("<code> must be a number")
+				continue
+			}
+			response, err := client.GoodDelete(ctx, &pb.GoodDeleteRequest{Code: code})
+			if err == nil {
+				fmt.Printf("response: [%v]", response)
+			} else {
+				fmt.Println(err.Error())
+				continue
+			}
 
 		default:
 			fmt.Printf("Unknown command <%s>\n", line)
-
 		}
 	}
 }

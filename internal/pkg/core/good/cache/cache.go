@@ -17,5 +17,9 @@ type Interface interface {
 	Update(models.Good) error
 	Delete(uint64) error
 	List() []models.Good
-	//GetNextCode() uint64
+
+	Lock() string
+	RLock() string
+	Unlock() string
+	RUnlock() string
 }
