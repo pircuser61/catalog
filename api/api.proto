@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package catalog.api;
+
+option go_package = "gitlab.ozon.dev/pircuser61/catalog/api";
+
+//option go_package = "gitlab.ozon.dev/kshmatov/masterclass1/pkg/api;api";
+
+service Catalog {
+  rpc GoodCreate(GoodCreateRequest) returns (GoodCreateResponse) { }
+  rpc GoodGet(GoodGetRequest) returns (GoodGetResponse) {}
+  rpc GoodList(GoodListRequest) returns (GoodListResponse) {}
+  rpc GoodUpdate(GoodUpdateRequest) returns (GoodUpdateResponse) {}
+  rpc GoodDelete(GoodDeleteRequest) returns (GoodDeleteResponse) {}
+}
+
+/*
+import "google/api/annotations.proto";
+
+
+service Catalog {
+  rpc GoodCreate(GoodCreateRequest) returns (GoodCreateResponse) {
+    option (google.api.http) = {
+      post: "/v1/Good"
+      body: "*"
+    };
+  }
+
+  rpc GoodGet(GoodGetRequest) returns (GoodGetResponse) {
+    option (google.api.http) = {
+      get: "/v1/Good"
+    };
+  }
+
+  rpc GoodList(GoodListRequest) returns (GoodListResponse) {
+    option (google.api.http) = {
+      get: "/v1/Goods"
+    };
+  }
+
+  rpc GoodUpdate(GoodUpdateRequest) returns (GoodUpdateResponse) {
+    option (google.api.http) = {
+      put: "/v1/Good"
+      body: "*"
+    };
+  }
+
+  rpc GoodDelete(GoodDeleteRequest) returns (GoodDeleteResponse) {
+    option (google.api.http) = {
+      delete: "/v1/Good"
+      body: "*"
+    };
+  }
+}
+*/
+
+// ---------------------------------------------------------------------------------------------------------------------
+// GoodCreate
+// ---------------------------------------------------------------------------------------------------------------------
+
+message GoodCreateRequest {
+    string name = 1;
+    string unitOfMeasure = 2;
+    string country = 3;
+}
+message GoodCreateResponse {}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// GoodList
+// ---------------------------------------------------------------------------------------------------------------------
+
+message GoodListRequest {}
+message GoodListResponse {
+  repeated Good Goods = 1;
+
+  message Good {
+    uint64 code = 1;
+    string name = 2;
+    
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// GoodUpdate
+// ---------------------------------------------------------------------------------------------------------------------
+
+message GoodUpdateRequest {
+    uint64 code = 1;
+    string name = 2;
+    string unitOfMeasure = 3;
+    string country = 4;
+}
+message GoodUpdateResponse {}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// GoodGet
+// ---------------------------------------------------------------------------------------------------------------------
+
+message GoodGetRequest {
+    uint64 code = 1;
+}
+message GoodGetResponse {
+    uint64 code = 1;
+    string name = 2;
+    string unitOfMeasure = 3;
+    string country = 4;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// GoodDelete
+// ---------------------------------------------------------------------------------------------------------------------
+
+message GoodDeleteRequest {
+    uint64 code = 1;
+}
+message GoodDeleteResponse {}

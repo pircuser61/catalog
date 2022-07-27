@@ -9,8 +9,7 @@ import (
 	goodPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good"
 )
 
-func main() {
-	good := goodPkg.New()
+func runBot(good goodPkg.Interface) {
 
 	var bot botPkg.Interface
 	{

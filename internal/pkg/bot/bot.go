@@ -7,7 +7,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/pkg/errors"
 
-	config "gitlab.ozon.dev/pircuser61/catalog/internal/config"
+	configPkg "gitlab.ozon.dev/pircuser61/catalog/internal/config"
 	commandPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/bot/command"
 )
 
@@ -25,7 +25,7 @@ type Interface interface {
 }
 
 func MustNew() Interface {
-	cfg, err := config.GetTgBotConfig()
+	cfg, err := configPkg.GetTgBotConfig()
 	if err != nil {
 		log.Panic(errors.Wrap(err, "Init tgbot config"))
 	}

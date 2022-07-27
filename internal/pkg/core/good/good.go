@@ -20,7 +20,8 @@ type core struct {
 	cache cachePkg.Interface
 }
 
-var ErrValidation = errors.New("Invalid data")
+var ErrValidation = errors.New("invalid data")
+var ErrNotFound = errors.New("good not found")
 
 func New() Interface {
 	return &core{
@@ -40,14 +41,24 @@ func (c *core) Get(code uint64) (*models.Good, error) {
 }
 
 func (c *core) Update(g models.Good) error {
-	if err := g.Validate(); err != nil {
+	err := g.Validate()
+	if err != nil {
 		return err
 	}
-	return c.cache.Update(g)
+	err = c.cache.Update(g)
+	if err != nil && errors.Is(err, cachePkg.ErrUserExists) {
+		return ErrNotFound
+	}
+	return err
 }
 
 func (c *core) Delete(code uint64) error {
-	return c.cache.Delete(code)
+	err := c.cache.Delete(code)
+
+	if err != nil && errors.Is(err, cachePkg.ErrUserExists) {
+		return ErrNotFound
+	}
+	return err
 }
 
 func (c *core) List() []models.Good {
