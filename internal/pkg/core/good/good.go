@@ -1,10 +1,13 @@
 package good
 
 import (
+	"context"
 	"errors"
 
 	cachePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/cache"
+	wrapPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/cache/cacheWrap"
 	localCachePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/cache/local"
+
 	"gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/models"
 )
 
@@ -26,6 +29,12 @@ var ErrNotFound = errors.New("good not found")
 func New() Interface {
 	return &core{
 		cache: localCachePkg.New(),
+	}
+}
+
+func NewWithContext(ctx context.Context) Interface {
+	return &core{
+		cache: wrapPkg.New(ctx, localCachePkg.New()),
 	}
 }
 
