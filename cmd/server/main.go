@@ -7,5 +7,6 @@ import (
 func main() {
 	good := goodPkg.New()
 	go runBot((good))
+	go runREST()
 	runGRPCServer(good)
 }

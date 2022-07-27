@@ -4,8 +4,7 @@ package catalog.api;
 
 option go_package = "gitlab.ozon.dev/pircuser61/catalog/api";
 
-//option go_package = "gitlab.ozon.dev/kshmatov/masterclass1/pkg/api;api";
-
+/*
 service Catalog {
   rpc GoodCreate(GoodCreateRequest) returns (GoodCreateResponse) { }
   rpc GoodGet(GoodGetRequest) returns (GoodGetResponse) {}
@@ -13,8 +12,8 @@ service Catalog {
   rpc GoodUpdate(GoodUpdateRequest) returns (GoodUpdateResponse) {}
   rpc GoodDelete(GoodDeleteRequest) returns (GoodDeleteResponse) {}
 }
+*/
 
-/*
 import "google/api/annotations.proto";
 
 
@@ -28,7 +27,7 @@ service Catalog {
 
   rpc GoodGet(GoodGetRequest) returns (GoodGetResponse) {
     option (google.api.http) = {
-      get: "/v1/Good"
+      get: "/v1/Good/{code}"
     };
   }
 
@@ -52,7 +51,7 @@ service Catalog {
     };
   }
 }
-*/
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // GoodCreate

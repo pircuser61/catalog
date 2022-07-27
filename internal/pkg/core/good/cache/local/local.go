@@ -17,7 +17,7 @@ type cache struct {
 	poolCh   chan struct{}
 }
 
-const poolSize = 4
+const poolSize = 10
 
 func New() cachePkg.Interface {
 	return &cache{data: map[uint64]models.Good{}, mu: sync.RWMutex{}, poolCh: make(chan struct{}, poolSize)}
@@ -49,9 +49,6 @@ func (c *cache) Add(g models.Good) error {
 		c.mu.Unlock()
 		<-c.poolCh
 	}()
-	//if _, ok := c.data[g.GetCode()]; ok {
-	//	return errors.Wrapf(ErrUserExists, "code %d", g.GetCode())
-	//}
 	if err := g.SetCode(c.GetNextCode()); err != nil {
 		return err
 	}
