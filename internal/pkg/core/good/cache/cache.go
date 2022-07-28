@@ -9,6 +9,7 @@ import (
 var (
 	ErrUserNotExists = errors.New("good does not exist")
 	ErrUserExists    = errors.New("good exist")
+	ErrTimeout       = errors.New("Timeout")
 )
 
 type Interface interface {
@@ -16,7 +17,7 @@ type Interface interface {
 	Get(uint64) (*models.Good, error)
 	Update(models.Good) error
 	Delete(uint64) error
-	List() []models.Good
+	List() ([]models.Good, error)
 
 	Lock() string
 	RLock() string

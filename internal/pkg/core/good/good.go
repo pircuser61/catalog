@@ -7,7 +7,6 @@ import (
 	cachePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/cache"
 	wrapPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/cache/cacheWrap"
 	localCachePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/cache/local"
-
 	"gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/models"
 )
 
@@ -16,7 +15,7 @@ type Interface interface {
 	Update(models.Good) error
 	Delete(uint64) error
 	Get(uint64) (*models.Good, error)
-	List() []models.Good
+	List() ([]models.Good, error)
 	GetCache() cachePkg.Interface
 }
 
@@ -70,7 +69,7 @@ func (c *core) Delete(code uint64) error {
 	return err
 }
 
-func (c *core) List() []models.Good {
+func (c *core) List() ([]models.Good, error) {
 	return c.cache.List()
 }
 

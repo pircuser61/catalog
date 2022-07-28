@@ -28,7 +28,7 @@ func (c *cache) GetNextCode() uint64 {
 	return c.lastCode
 }
 
-func (c *cache) List() []models.Good {
+func (c *cache) List() ([]models.Good, error) {
 	c.poolCh <- struct{}{}
 	c.mu.RLock()
 	defer func() {
@@ -39,7 +39,7 @@ func (c *cache) List() []models.Good {
 	for _, x := range c.data {
 		result = append(result, x)
 	}
-	return result
+	return result, nil
 }
 
 func (c *cache) Add(g models.Good) error {

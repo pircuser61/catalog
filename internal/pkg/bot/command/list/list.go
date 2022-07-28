@@ -24,7 +24,10 @@ func (c *command) Description() string {
 }
 
 func (c *command) Process(args string) string {
-	data := c.good.List()
+	data, err := c.good.List()
+	if err != nil {
+		return err.Error()
+	}
 	if len(data) == 0 {
 		return "Список пуст"
 	}

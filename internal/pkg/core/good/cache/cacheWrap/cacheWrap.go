@@ -2,7 +2,6 @@ package local
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	cachePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/cache"
@@ -23,8 +22,20 @@ func New(_ context.Context, c cachePkg.Interface) cachePkg.Interface {
 	return &cacheWrap{cache: &c, timeout: tm}
 }
 
-func (c *cacheWrap) List() []models.Good {
-	return (*c.cache).List()
+func (c *cacheWrap) List() ([]models.Good, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), c.timeout)
+	defer cancel()
+	okChan := make(chan struct{}, 1)
+
+	var list []models.Good
+	go func() { list, _ = (*c.cache).List(); okChan <- struct{}{} }()
+	select {
+	case <-ctx.Done():
+		return nil, cachePkg.ErrTimeout
+	case <-okChan:
+		return list, nil
+	}
+
 }
 
 func (c *cacheWrap) Add(g models.Good) error {
@@ -35,22 +46,53 @@ func (c *cacheWrap) Add(g models.Good) error {
 	go func() { err = (*c.cache).Add(g); okChan <- struct{}{} }()
 	select {
 	case <-ctx.Done():
-		return errors.New("Timeout")
+		return cachePkg.ErrTimeout
 	case <-okChan:
 		return err
 	}
 }
 
 func (c *cacheWrap) Get(code uint64) (*models.Good, error) {
-	return (*c.cache).Get(code)
+	ctx, cancel := context.WithTimeout(context.Background(), c.timeout)
+	defer cancel()
+	okChan := make(chan struct{}, 1)
+	var err error
+	var g *models.Good
+	go func() { g, err = (*c.cache).Get(code); okChan <- struct{}{} }()
+	select {
+	case <-ctx.Done():
+		return nil, cachePkg.ErrTimeout
+	case <-okChan:
+		return g, err
+	}
 }
 
 func (c *cacheWrap) Update(g models.Good) error {
-	return (*c.cache).Update(g)
+	ctx, cancel := context.WithTimeout(context.Background(), c.timeout)
+	defer cancel()
+	okChan := make(chan struct{}, 1)
+	var err error
+	go func() { err = (*c.cache).Update(g); okChan <- struct{}{} }()
+	select {
+	case <-ctx.Done():
+		return cachePkg.ErrTimeout
+	case <-okChan:
+		return err
+	}
 }
 
 func (c *cacheWrap) Delete(code uint64) error {
-	return (*c.cache).Delete(code)
+	ctx, cancel := context.WithTimeout(context.Background(), c.timeout)
+	defer cancel()
+	okChan := make(chan struct{}, 1)
+	var err error
+	go func() { err = (*c.cache).Delete(code); okChan <- struct{}{} }()
+	select {
+	case <-ctx.Done():
+		return cachePkg.ErrTimeout
+	case <-okChan:
+		return err
+	}
 }
 
 func (c *cacheWrap) Lock() string {

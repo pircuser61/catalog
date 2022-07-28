@@ -6,6 +6,7 @@ import (
 
 	pb "gitlab.ozon.dev/pircuser61/catalog/api"
 	goodPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good"
+	"gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/cache"
 	"gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/models"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -31,6 +32,10 @@ func (i *implementation) GoodCreate(_ context.Context, in *pb.GoodCreateRequest)
 		if errors.Is(err, models.ErrValidation) {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
+		if errors.Is(err, cache.ErrTimeout) {
+			return nil, status.Error(codes.DeadlineExceeded, err.Error())
+		}
+
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 	return &pb.GoodCreateResponse{}, nil
@@ -48,6 +53,10 @@ func (i *implementation) GoodUpdate(_ context.Context, in *pb.GoodUpdateRequest)
 		if errors.Is(err, goodPkg.ErrNotFound) {
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
+		if errors.Is(err, cache.ErrTimeout) {
+			return nil, status.Error(codes.DeadlineExceeded, err.Error())
+		}
+
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 	return &pb.GoodUpdateResponse{}, nil
@@ -61,14 +70,24 @@ func (i *implementation) GoodDelete(_ context.Context, in *pb.GoodDeleteRequest)
 		if errors.Is(err, goodPkg.ErrNotFound) {
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
+		if errors.Is(err, cache.ErrTimeout) {
+			return nil, status.Error(codes.DeadlineExceeded, err.Error())
+		}
+
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 	return &pb.GoodDeleteResponse{}, nil
 }
 
 func (i *implementation) GoodList(context.Context, *pb.GoodListRequest) (*pb.GoodListResponse, error) {
-	goods := i.good.List()
+	goods, err := i.good.List()
+	if err != nil {
+		if errors.Is(err, cache.ErrTimeout) {
+			return nil, status.Error(codes.DeadlineExceeded, err.Error())
+		}
+		return nil, status.Error(codes.Internal, err.Error())
 
+	}
 	result := make([]*pb.GoodListResponse_Good, 0, len(goods))
 	for _, good := range goods {
 		result = append(result, &pb.GoodListResponse_Good{
@@ -86,6 +105,9 @@ func (i *implementation) GoodGet(_ context.Context, in *pb.GoodGetRequest) (*pb.
 	if err != nil {
 		if errors.Is(err, goodPkg.ErrNotFound) {
 			return nil, status.Error(codes.NotFound, err.Error())
+		}
+		if errors.Is(err, cache.ErrTimeout) {
+			return nil, status.Error(codes.DeadlineExceeded, err.Error())
 		}
 		return nil, status.Error(codes.Internal, err.Error())
 	}
