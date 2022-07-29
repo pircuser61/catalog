@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/v1/Good": {
+    "/v1/good": {
       "delete": {
         "operationId": "catalog_GoodDelete",
         "responses": {
@@ -111,7 +111,7 @@
         ]
       }
     },
-    "/v1/Good/{code}": {
+    "/v1/good/{code}": {
       "get": {
         "operationId": "catalog_GoodGet",
         "responses": {
@@ -142,7 +142,7 @@
         ]
       }
     },
-    "/v1/Goods": {
+    "/v1/goods": {
       "get": {
         "operationId": "catalog_GoodList",
         "responses": {
@@ -166,18 +166,6 @@
     }
   },
   "definitions": {
-    "GoodListResponseGood": {
-      "type": "object",
-      "properties": {
-        "code": {
-          "type": "string",
-          "format": "uint64"
-        },
-        "name": {
-          "type": "string"
-        }
-      }
-    },
     "apiGoodCreateRequest": {
       "type": "object",
       "properties": {
@@ -199,23 +187,14 @@
           "type": "string",
           "format": "uint64"
         }
-      }
+      },
+      "title": "---------------------------------------------------------------------------------------------------------------------\nGoodDelete\n---------------------------------------------------------------------------------------------------------------------"
     },
     "apiGoodGetResponse": {
       "type": "object",
       "properties": {
-        "code": {
-          "type": "string",
-          "format": "uint64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "unitOfMeasure": {
-          "type": "string"
-        },
-        "country": {
-          "type": "string"
+        "good": {
+          "$ref": "#/definitions/catalogapiGood"
         }
       }
     },
@@ -225,12 +204,32 @@
         "Goods": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/GoodListResponseGood"
+            "$ref": "#/definitions/apiGoodListResponseGood"
           }
         }
       }
     },
+    "apiGoodListResponseGood": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "apiGoodUpdateRequest": {
+      "type": "object",
+      "properties": {
+        "good": {
+          "$ref": "#/definitions/catalogapiGood"
+        }
+      }
+    },
+    "catalogapiGood": {
       "type": "object",
       "properties": {
         "code": {

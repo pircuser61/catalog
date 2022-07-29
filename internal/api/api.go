@@ -43,11 +43,15 @@ func (i *implementation) GoodCreate(ctx context.Context, in *pb.GoodCreateReques
 }
 
 func (i *implementation) GoodUpdate(ctx context.Context, in *pb.GoodUpdateRequest) (*emptypb.Empty, error) {
+	inGood := in.GetGood()
+	if inGood == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
 	if err := i.good.Update(ctx, models.Good{
-		Code:          in.GetCode(),
-		Name:          in.GetName(),
-		UnitOfMeasure: in.GetUnitOfMeasure(),
-		Country:       in.GetCountry()}); err != nil {
+		Code:          inGood.GetCode(),
+		Name:          inGood.GetName(),
+		UnitOfMeasure: inGood.GetUnitOfMeasure(),
+		Country:       inGood.GetCountry()}); err != nil {
 		if errors.Is(err, models.ErrValidation) {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
@@ -111,10 +115,12 @@ func (i *implementation) GoodGet(ctx context.Context, in *pb.GoodGetRequest) (*p
 		}
 		return nil, status.Error(codes.Internal, err.Error())
 	}
+
 	return &pb.GoodGetResponse{
-		Code:          good.Code,
-		Name:          good.Name,
-		UnitOfMeasure: good.UnitOfMeasure,
-		Country:       good.Country,
+		Good: &pb.Good{
+			Code:          good.Code,
+			Name:          good.Name,
+			UnitOfMeasure: good.UnitOfMeasure,
+			Country:       good.Country},
 	}, nil
 }

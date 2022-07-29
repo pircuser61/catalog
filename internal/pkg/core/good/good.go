@@ -14,7 +14,7 @@ type Interface interface {
 	Update(context.Context, models.Good) error
 	Delete(context.Context, uint64) error
 	Get(context.Context, uint64) (*models.Good, error)
-	List(context.Context) ([]models.Good, error)
+	List(context.Context) ([]*models.Good, error)
 	GetCache() cachePkg.Interface
 }
 
@@ -34,7 +34,7 @@ func (c *core) Create(ctx context.Context, g models.Good) error {
 	if err := g.Validate(); err != nil {
 		return err
 	}
-	return c.cache.Add(ctx, g)
+	return c.cache.Add(ctx, &g)
 }
 
 func (c *core) Get(ctx context.Context, code uint64) (*models.Good, error) {
@@ -46,7 +46,7 @@ func (c *core) Update(ctx context.Context, g models.Good) error {
 	if err != nil {
 		return err
 	}
-	err = c.cache.Update(ctx, g)
+	err = c.cache.Update(ctx, &g)
 	if err != nil && errors.Is(err, cachePkg.ErrUserNotExists) {
 		return ErrNotFound
 	}
@@ -62,7 +62,7 @@ func (c *core) Delete(ctx context.Context, code uint64) error {
 	return err
 }
 
-func (c *core) List(ctx context.Context) ([]models.Good, error) {
+func (c *core) List(ctx context.Context) ([]*models.Good, error) {
 	return c.cache.List(ctx)
 }
 

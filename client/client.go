@@ -8,11 +8,10 @@ import (
 	"strconv"
 	"strings"
 
+	pb "gitlab.ozon.dev/pircuser61/catalog/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/types/known/emptypb"
-
-	pb "gitlab.ozon.dev/pircuser61/catalog/api"
 )
 
 func main() {
@@ -74,7 +73,12 @@ func main() {
 				fmt.Println("<code> must be a number")
 				continue
 			}
-			request := pb.GoodUpdateRequest{Code: code, Name: params[2], UnitOfMeasure: params[3], Country: params[4]}
+			request := pb.GoodUpdateRequest{
+				Good: &pb.Good{
+					Code:          code,
+					Name:          params[2],
+					UnitOfMeasure: params[3],
+					Country:       params[4]}}
 			response, err := client.GoodUpdate(ctx, &request)
 			if err == nil {
 				fmt.Printf("response: [%v]", response)

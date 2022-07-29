@@ -1,5 +1,7 @@
 package stop
 
+// Для тестов
+
 import (
 	"context"
 

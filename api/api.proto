@@ -10,36 +10,48 @@ import "google/protobuf/empty.proto";
 service catalog {
   rpc GoodCreate(GoodCreateRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/v1/Good"
+      post: "/v1/good"
       body: "*"
     };
   }
 
   rpc GoodGet(GoodGetRequest) returns (GoodGetResponse) {
     option (google.api.http) = {
-      get: "/v1/Good/{code}"
+      get: "/v1/good/{code}"
     };
   }
 
   rpc GoodList(google.protobuf.Empty) returns (GoodListResponse) {
     option (google.api.http) = {
-      get: "/v1/Goods"
+      get: "/v1/goods"
     };
   }
 
   rpc GoodUpdate(GoodUpdateRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/v1/Good"
+      put: "/v1/good"
       body: "*"
     };
   }
 
   rpc GoodDelete(GoodDeleteRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/v1/Good"
+      delete: "/v1/good"
       body: "*"
     };
   }
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------------------------------------------------
+
+message Good {
+    uint64 code = 1;
+    string name = 2;
+    string unit_of_measure = 3;
+    string country = 4;
 }
 
 
@@ -49,7 +61,7 @@ service catalog {
 
 message GoodCreateRequest {
     string name = 1;
-    string unitOfMeasure = 2;
+    string unit_of_measure = 2;
     string country = 3;
 }
 
@@ -64,7 +76,6 @@ message GoodListResponse {
   message Good {
     uint64 code = 1;
     string name = 2;
-    
   }
 }
 
@@ -73,10 +84,7 @@ message GoodListResponse {
 // ---------------------------------------------------------------------------------------------------------------------
 
 message GoodUpdateRequest {
-    uint64 code = 1;
-    string name = 2;
-    string unitOfMeasure = 3;
-    string country = 4;
+    Good good = 1;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -87,16 +95,12 @@ message GoodGetRequest {
     uint64 code = 1;
 }
 message GoodGetResponse {
-    uint64 code = 1;
-    string name = 2;
-    string unitOfMeasure = 3;
-    string country = 4;
+    Good good = 1;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // GoodDelete
 // ---------------------------------------------------------------------------------------------------------------------
-
 message GoodDeleteRequest {
     uint64 code = 1;
 }

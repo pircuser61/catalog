@@ -14,12 +14,13 @@ var (
 )
 
 type Interface interface {
-	Add(context.Context, models.Good) error
+	Add(context.Context, *models.Good) error
 	Get(context.Context, uint64) (*models.Good, error)
-	Update(context.Context, models.Good) error
+	Update(context.Context, *models.Good) error
 	Delete(context.Context, uint64) error
-	List(context.Context) ([]models.Good, error)
+	List(context.Context) ([]*models.Good, error)
 
+	/* Методы для тестирования */
 	Lock() string
 	RLock() string
 	Unlock() string

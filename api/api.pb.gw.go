@@ -217,7 +217,7 @@ func RegisterCatalogHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.api.Catalog/GoodCreate", runtime.WithHTTPPathPattern("/v1/Good"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.api.Catalog/GoodCreate", runtime.WithHTTPPathPattern("/v1/good"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -241,7 +241,7 @@ func RegisterCatalogHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.api.Catalog/GoodGet", runtime.WithHTTPPathPattern("/v1/Good/{code}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.api.Catalog/GoodGet", runtime.WithHTTPPathPattern("/v1/good/{code}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -265,7 +265,7 @@ func RegisterCatalogHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.api.Catalog/GoodList", runtime.WithHTTPPathPattern("/v1/Goods"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.api.Catalog/GoodList", runtime.WithHTTPPathPattern("/v1/goods"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -289,7 +289,7 @@ func RegisterCatalogHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.api.Catalog/GoodUpdate", runtime.WithHTTPPathPattern("/v1/Good"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.api.Catalog/GoodUpdate", runtime.WithHTTPPathPattern("/v1/good"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -313,7 +313,7 @@ func RegisterCatalogHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.api.Catalog/GoodDelete", runtime.WithHTTPPathPattern("/v1/Good"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.api.Catalog/GoodDelete", runtime.WithHTTPPathPattern("/v1/good"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -376,7 +376,7 @@ func RegisterCatalogHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.api.Catalog/GoodCreate", runtime.WithHTTPPathPattern("/v1/Good"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.api.Catalog/GoodCreate", runtime.WithHTTPPathPattern("/v1/good"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -397,7 +397,7 @@ func RegisterCatalogHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.api.Catalog/GoodGet", runtime.WithHTTPPathPattern("/v1/Good/{code}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.api.Catalog/GoodGet", runtime.WithHTTPPathPattern("/v1/good/{code}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -418,7 +418,7 @@ func RegisterCatalogHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.api.Catalog/GoodList", runtime.WithHTTPPathPattern("/v1/Goods"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.api.Catalog/GoodList", runtime.WithHTTPPathPattern("/v1/goods"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -439,7 +439,7 @@ func RegisterCatalogHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.api.Catalog/GoodUpdate", runtime.WithHTTPPathPattern("/v1/Good"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.api.Catalog/GoodUpdate", runtime.WithHTTPPathPattern("/v1/good"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -460,7 +460,7 @@ func RegisterCatalogHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.api.Catalog/GoodDelete", runtime.WithHTTPPathPattern("/v1/Good"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.api.Catalog/GoodDelete", runtime.WithHTTPPathPattern("/v1/good"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -480,15 +480,15 @@ func RegisterCatalogHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 }
 
 var (
-	pattern_Catalog_GoodCreate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "Good"}, ""))
+	pattern_Catalog_GoodCreate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "good"}, ""))
 
-	pattern_Catalog_GoodGet_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "Good", "code"}, ""))
+	pattern_Catalog_GoodGet_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "good", "code"}, ""))
 
-	pattern_Catalog_GoodList_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "Goods"}, ""))
+	pattern_Catalog_GoodList_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "goods"}, ""))
 
-	pattern_Catalog_GoodUpdate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "Good"}, ""))
+	pattern_Catalog_GoodUpdate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "good"}, ""))
 
-	pattern_Catalog_GoodDelete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "Good"}, ""))
+	pattern_Catalog_GoodDelete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "good"}, ""))
 )
 
 var (

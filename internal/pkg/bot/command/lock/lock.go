@@ -1,5 +1,7 @@
 package lock
 
+// Для тестов
+
 import (
 	"context"
 
