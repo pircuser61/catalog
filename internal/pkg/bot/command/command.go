@@ -1,7 +1,9 @@
 package command
 
+import "context"
+
 type Interface interface {
 	Name() string
 	Description() string
-	Process(string) string
+	Process(context.Context, string) string
 }

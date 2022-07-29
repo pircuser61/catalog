@@ -10,6 +10,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	pb "gitlab.ozon.dev/pircuser61/catalog/api"
 )
@@ -41,7 +42,7 @@ func main() {
 		case "q":
 			return
 		case "list":
-			response, err := client.GoodList(ctx, &pb.GoodListRequest{})
+			response, err := client.GoodList(ctx, &emptypb.Empty{})
 			if err == nil {
 				fmt.Printf("response: [%v]", response)
 			} else {

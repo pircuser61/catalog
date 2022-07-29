@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	botPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/bot"
@@ -12,10 +13,11 @@ import (
 
 	cmdHelpPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/bot/command/help"
 	cmdLockPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/bot/command/lock"
+	cmdStopPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/bot/command/stop"
 	goodPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good"
 )
 
-func runBot(good goodPkg.Interface) {
+func runBot(ctx context.Context, stopCh chan<- struct{}, good goodPkg.Interface) {
 
 	var bot botPkg.Interface
 	{
@@ -35,13 +37,17 @@ func runBot(good goodPkg.Interface) {
 		commandList := cmdListPkg.New(good)
 		bot.RgiesterHandler((commandList))
 
+		commandStop := cmdStopPkg.New(stopCh)
+		bot.RgiesterHandler((commandStop))
+
 		commandLock := cmdLockPkg.New(good)
 		bot.RgiesterHandler(commandLock)
+
 		commandHelp := cmdHelpPkg.New(bot.GetCmdList())
 		bot.RgiesterHandler(commandHelp)
 	}
 
-	if err := bot.Run(); err != nil {
+	if err := bot.Run(ctx); err != nil {
 		log.Panic(err)
 	}
 }

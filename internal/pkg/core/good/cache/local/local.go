@@ -1,8 +1,10 @@
 package local
 
 import (
+	"context"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/pkg/errors"
 
@@ -15,12 +17,15 @@ type cache struct {
 	lastCode uint64
 	mu       sync.RWMutex
 	poolCh   chan struct{}
+	timeout  time.Duration
 }
 
 const poolSize = 10
 
 func New() cachePkg.Interface {
-	return &cache{data: map[uint64]models.Good{}, mu: sync.RWMutex{}, poolCh: make(chan struct{}, poolSize)}
+	tm := time.Duration(time.Millisecond * 8000)
+
+	return &cache{data: map[uint64]models.Good{}, mu: sync.RWMutex{}, poolCh: make(chan struct{}, poolSize), timeout: tm}
 }
 
 func (c *cache) GetNextCode() uint64 {
@@ -28,74 +33,149 @@ func (c *cache) GetNextCode() uint64 {
 	return c.lastCode
 }
 
-func (c *cache) List() ([]models.Good, error) {
-	c.poolCh <- struct{}{}
-	c.mu.RLock()
-	defer func() {
-		c.mu.RUnlock()
-		<-c.poolCh
+func (c *cache) List(ctx context.Context) ([]models.Good, error) {
+
+	ctx, cancel := context.WithTimeout(ctx, c.timeout)
+	defer cancel()
+	okChan := make(chan struct{}, 1)
+
+	var result []models.Good
+
+	go func() {
+		c.poolCh <- struct{}{}
+		c.mu.RLock()
+		defer func() {
+			c.mu.RUnlock()
+			<-c.poolCh
+		}()
+		result = make([]models.Good, 0, len(c.data))
+		for _, x := range c.data {
+			result = append(result, x)
+		}
+		okChan <- struct{}{}
 	}()
-	result := make([]models.Good, 0, len(c.data))
-	for _, x := range c.data {
-		result = append(result, x)
+
+	select {
+	case <-ctx.Done():
+		return nil, cachePkg.ErrTimeout
+	case <-okChan:
+		return result, nil
 	}
-	return result, nil
+
 }
 
-func (c *cache) Add(g models.Good) error {
-	c.poolCh <- struct{}{}
-	c.mu.Lock()
-	defer func() {
-		c.mu.Unlock()
-		<-c.poolCh
+func (c *cache) Add(ctx context.Context, g models.Good) error {
+	ctx, cancel := context.WithTimeout(ctx, c.timeout)
+	defer cancel()
+	okChan := make(chan struct{}, 1)
+	var err error
+	go func() {
+		c.poolCh <- struct{}{}
+		c.mu.Lock()
+		defer func() {
+			c.mu.Unlock()
+			<-c.poolCh
+		}()
+		err = g.SetCode(c.GetNextCode())
+		if err == nil {
+			c.data[g.GetCode()] = g
+		}
+		okChan <- struct{}{}
 	}()
-	if err := g.SetCode(c.GetNextCode()); err != nil {
+
+	select {
+	case <-ctx.Done():
+		return cachePkg.ErrTimeout
+	case <-okChan:
 		return err
 	}
-	c.data[g.GetCode()] = g
-	return nil
+
 }
 
-func (c *cache) Get(code uint64) (*models.Good, error) {
-	c.poolCh <- struct{}{}
-	c.mu.RLock()
-	defer func() {
-		c.mu.RUnlock()
-		<-c.poolCh
+func (c *cache) Get(ctx context.Context, code uint64) (*models.Good, error) {
+	ctx, cancel := context.WithTimeout(ctx, c.timeout)
+	defer cancel()
+	okChan := make(chan struct{}, 1)
+	var ok bool
+	var result models.Good
+	go func() {
+		c.poolCh <- struct{}{}
+		c.mu.RLock()
+		defer func() {
+			c.mu.RUnlock()
+			<-c.poolCh
+		}()
+		result, ok = c.data[code]
+		okChan <- struct{}{}
 	}()
-	if g, ok := c.data[code]; ok {
-		return &g, nil
+
+	select {
+	case <-ctx.Done():
+		return nil, cachePkg.ErrTimeout
+	case <-okChan:
+		if ok {
+			return &result, nil
+		}
+		return nil, errors.Wrapf(cachePkg.ErrUserNotExists, "code %d", code)
 	}
-	return nil, errors.Wrapf(cachePkg.ErrUserNotExists, "code %d", code)
+
 }
 
-func (c *cache) Update(g models.Good) error {
-	c.poolCh <- struct{}{}
-	c.mu.Lock()
-	defer func() {
-		c.mu.Unlock()
-		<-c.poolCh
-	}()
+func (c *cache) Update(ctx context.Context, g models.Good) error {
+	ctx, cancel := context.WithTimeout(ctx, c.timeout)
+	defer cancel()
+	okChan := make(chan struct{}, 1)
+	var err error
+	go func() {
+		c.poolCh <- struct{}{}
+		c.mu.Lock()
+		defer func() {
+			c.mu.Unlock()
+			<-c.poolCh
+		}()
 
-	if _, ok := c.data[g.GetCode()]; !ok {
-		return errors.Wrapf(cachePkg.ErrUserNotExists, "code %d", g.GetCode())
+		if _, ok := c.data[g.GetCode()]; !ok {
+			err = errors.Wrapf(cachePkg.ErrUserNotExists, "code %d", g.GetCode())
+		} else {
+			c.data[g.GetCode()] = g
+		}
+		okChan <- struct{}{}
+	}()
+	select {
+	case <-ctx.Done():
+		return cachePkg.ErrTimeout
+	case <-okChan:
+		return err
 	}
-	c.data[g.GetCode()] = g
-	return nil
+
 }
 
-func (c *cache) Delete(code uint64) error {
-	c.poolCh <- struct{}{}
-	c.mu.Lock()
-	defer func() {
-		c.mu.Unlock()
-		<-c.poolCh
+func (c *cache) Delete(ctx context.Context, code uint64) error {
+	ctx, cancel := context.WithTimeout(ctx, c.timeout)
+	defer cancel()
+	okChan := make(chan struct{}, 1)
+	var err error
+	go func() {
+		c.poolCh <- struct{}{}
+		c.mu.Lock()
+		defer func() {
+			c.mu.Unlock()
+			<-c.poolCh
+		}()
+		if _, ok := c.data[code]; ok {
+			delete(c.data, code)
+			err = nil
+		} else {
+			err = errors.Wrapf(cachePkg.ErrUserNotExists, "code %d", code)
+		}
+		okChan <- struct{}{}
 	}()
-	if _, ok := c.data[code]; ok {
-		delete(c.data, code)
-		return nil
+	select {
+	case <-ctx.Done():
+		return cachePkg.ErrTimeout
+	case <-okChan:
+		return err
 	}
-	return errors.Wrapf(cachePkg.ErrUserNotExists, "code %d", code)
 }
 
 func (c *cache) queueLen() string {

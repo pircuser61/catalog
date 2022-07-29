@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"context"
 	"errors"
 
 	"gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/models"
@@ -13,11 +14,11 @@ var (
 )
 
 type Interface interface {
-	Add(models.Good) error
-	Get(uint64) (*models.Good, error)
-	Update(models.Good) error
-	Delete(uint64) error
-	List() ([]models.Good, error)
+	Add(context.Context, models.Good) error
+	Get(context.Context, uint64) (*models.Good, error)
+	Update(context.Context, models.Good) error
+	Delete(context.Context, uint64) error
+	List(context.Context) ([]models.Good, error)
 
 	Lock() string
 	RLock() string

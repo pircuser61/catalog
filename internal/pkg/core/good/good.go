@@ -5,17 +5,16 @@ import (
 	"errors"
 
 	cachePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/cache"
-	wrapPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/cache/cacheWrap"
 	localCachePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/cache/local"
 	"gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/models"
 )
 
 type Interface interface {
-	Create(models.Good) error
-	Update(models.Good) error
-	Delete(uint64) error
-	Get(uint64) (*models.Good, error)
-	List() ([]models.Good, error)
+	Create(context.Context, models.Good) error
+	Update(context.Context, models.Good) error
+	Delete(context.Context, uint64) error
+	Get(context.Context, uint64) (*models.Good, error)
+	List(context.Context) ([]models.Good, error)
 	GetCache() cachePkg.Interface
 }
 
@@ -31,46 +30,40 @@ func New() Interface {
 	}
 }
 
-func NewWithContext(ctx context.Context) Interface {
-	return &core{
-		cache: wrapPkg.New(ctx, localCachePkg.New()),
-	}
-}
-
-func (c *core) Create(g models.Good) error {
+func (c *core) Create(ctx context.Context, g models.Good) error {
 	if err := g.Validate(); err != nil {
 		return err
 	}
-	return c.cache.Add(g)
+	return c.cache.Add(ctx, g)
 }
 
-func (c *core) Get(code uint64) (*models.Good, error) {
-	return c.cache.Get(code)
+func (c *core) Get(ctx context.Context, code uint64) (*models.Good, error) {
+	return c.cache.Get(ctx, code)
 }
 
-func (c *core) Update(g models.Good) error {
+func (c *core) Update(ctx context.Context, g models.Good) error {
 	err := g.Validate()
 	if err != nil {
 		return err
 	}
-	err = c.cache.Update(g)
-	if err != nil && errors.Is(err, cachePkg.ErrUserExists) {
+	err = c.cache.Update(ctx, g)
+	if err != nil && errors.Is(err, cachePkg.ErrUserNotExists) {
 		return ErrNotFound
 	}
 	return err
 }
 
-func (c *core) Delete(code uint64) error {
-	err := c.cache.Delete(code)
+func (c *core) Delete(ctx context.Context, code uint64) error {
+	err := c.cache.Delete(ctx, code)
 
-	if err != nil && errors.Is(err, cachePkg.ErrUserExists) {
+	if err != nil && errors.Is(err, cachePkg.ErrUserNotExists) {
 		return ErrNotFound
 	}
 	return err
 }
 
-func (c *core) List() ([]models.Good, error) {
-	return c.cache.List()
+func (c *core) List(ctx context.Context) ([]models.Good, error) {
+	return c.cache.List(ctx)
 }
 
 func (c *core) GetCache() cachePkg.Interface {

@@ -1,6 +1,7 @@
 package add
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strings"
@@ -26,12 +27,12 @@ func (c *command) Description() string {
 	return "<name> <unit of measure> <country>"
 }
 
-func (c *command) Process(args string) string {
+func (c *command) Process(ctx context.Context, args string) string {
 	params := strings.Split(args, " ")
 	if len(params) != 3 {
 		return fmt.Sprintf("invalid args %d items <%v>", len(params), params)
 	}
-	if err := c.good.Create(models.Good{Name: params[0], UnitOfMeasure: params[1], Country: params[2]}); err != nil {
+	if err := c.good.Create(ctx, models.Good{Name: params[0], UnitOfMeasure: params[1], Country: params[2]}); err != nil {
 		if errors.Is(err, models.ErrValidation) {
 			return err.Error()
 		}

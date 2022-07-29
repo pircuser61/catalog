@@ -1,6 +1,7 @@
-package GoodListResponse
+package list
 
 import (
+	"context"
 	"strings"
 
 	commandPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/bot/command"
@@ -23,8 +24,8 @@ func (c *command) Description() string {
 	return "no params"
 }
 
-func (c *command) Process(args string) string {
-	data, err := c.good.List()
+func (c *command) Process(ctx context.Context, args string) string {
+	data, err := c.good.List(ctx)
 	if err != nil {
 		return err.Error()
 	}

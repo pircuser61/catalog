@@ -1,6 +1,7 @@
 package delete
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strconv"
@@ -26,7 +27,7 @@ func (c *command) Description() string {
 	return "<code>"
 }
 
-func (c *command) Process(args string) string {
+func (c *command) Process(ctx context.Context, args string) string {
 	params := strings.Split(args, " ")
 	if len(params) != 1 {
 		return fmt.Sprintf("invalid args %d items <%v>", len(params), params)
@@ -36,7 +37,7 @@ func (c *command) Process(args string) string {
 		return err.Error()
 	}
 
-	if err := c.good.Delete(code); err != nil {
+	if err := c.good.Delete(ctx, code); err != nil {
 		if errors.Is(err, goodPkg.ErrNotFound) {
 			return "not found"
 		}

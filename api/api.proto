@@ -4,21 +4,11 @@ package catalog.api;
 
 option go_package = "gitlab.ozon.dev/pircuser61/catalog/api";
 
-/*
-service Catalog {
-  rpc GoodCreate(GoodCreateRequest) returns (GoodCreateResponse) { }
-  rpc GoodGet(GoodGetRequest) returns (GoodGetResponse) {}
-  rpc GoodList(GoodListRequest) returns (GoodListResponse) {}
-  rpc GoodUpdate(GoodUpdateRequest) returns (GoodUpdateResponse) {}
-  rpc GoodDelete(GoodDeleteRequest) returns (GoodDeleteResponse) {}
-}
-*/
-
 import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 
-
-service Catalog {
-  rpc GoodCreate(GoodCreateRequest) returns (GoodCreateResponse) {
+service catalog {
+  rpc GoodCreate(GoodCreateRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/v1/Good"
       body: "*"
@@ -31,20 +21,20 @@ service Catalog {
     };
   }
 
-  rpc GoodList(GoodListRequest) returns (GoodListResponse) {
+  rpc GoodList(google.protobuf.Empty) returns (GoodListResponse) {
     option (google.api.http) = {
       get: "/v1/Goods"
     };
   }
 
-  rpc GoodUpdate(GoodUpdateRequest) returns (GoodUpdateResponse) {
+  rpc GoodUpdate(GoodUpdateRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/v1/Good"
       body: "*"
     };
   }
 
-  rpc GoodDelete(GoodDeleteRequest) returns (GoodDeleteResponse) {
+  rpc GoodDelete(GoodDeleteRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete: "/v1/Good"
       body: "*"
@@ -62,13 +52,12 @@ message GoodCreateRequest {
     string unitOfMeasure = 2;
     string country = 3;
 }
-message GoodCreateResponse {}
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // GoodList
 // ---------------------------------------------------------------------------------------------------------------------
 
-message GoodListRequest {}
 message GoodListResponse {
   repeated Good Goods = 1;
 
@@ -89,7 +78,6 @@ message GoodUpdateRequest {
     string unitOfMeasure = 3;
     string country = 4;
 }
-message GoodUpdateResponse {}
 
 // ---------------------------------------------------------------------------------------------------------------------
 // GoodGet
@@ -112,4 +100,4 @@ message GoodGetResponse {
 message GoodDeleteRequest {
     uint64 code = 1;
 }
-message GoodDeleteResponse {}
+

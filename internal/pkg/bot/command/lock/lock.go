@@ -1,6 +1,8 @@
 package lock
 
 import (
+	"context"
+
 	commandPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/bot/command"
 	goodPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good"
 )
@@ -21,7 +23,7 @@ func (c *command) Description() string {
 	return "avail commands: Rlock, Wlock, RUnlock, WUnlock"
 }
 
-func (c *command) Process(args string) string {
+func (c *command) Process(_ context.Context, args string) string {
 	switch args {
 	case "Rlock":
 		return c.good.GetCache().RLock()

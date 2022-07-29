@@ -1,6 +1,7 @@
 package update
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strconv"
@@ -28,7 +29,7 @@ func (c *command) Description() string {
 	return "<code> <name> <unit of measure> <country"
 }
 
-func (c *command) Process(args string) string {
+func (c *command) Process(ctx context.Context, args string) string {
 	params := strings.Split(args, " ")
 	if len(params) != 4 {
 		return fmt.Sprintf("invalid args %d items <%v>", len(params), params)
@@ -37,7 +38,7 @@ func (c *command) Process(args string) string {
 	if err != nil {
 		return err.Error()
 	}
-	g, err := c.good.Get(code)
+	g, err := c.good.Get(ctx, code)
 	if err != nil {
 		if errors.Is(err, cachePkg.ErrUserNotExists) {
 			return "not found"
@@ -48,7 +49,7 @@ func (c *command) Process(args string) string {
 	g.UnitOfMeasure = params[2]
 	g.Country = params[3]
 
-	if err := c.good.Update(*g); err != nil {
+	if err := c.good.Update(ctx, *g); err != nil {
 		if errors.Is(err, goodPkg.ErrNotFound) {
 			return "not found"
 		}

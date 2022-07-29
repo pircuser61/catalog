@@ -1,6 +1,7 @@
 package get
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strconv"
@@ -27,7 +28,7 @@ func (c *command) Description() string {
 	return "<code>"
 }
 
-func (c *command) Process(args string) string {
+func (c *command) Process(ctx context.Context, args string) string {
 	params := strings.Split(args, " ")
 	if len(params) != 1 {
 		return fmt.Sprintf("invalid args %d items <%v>", len(params), params)
@@ -36,7 +37,7 @@ func (c *command) Process(args string) string {
 	if err != nil {
 		return err.Error()
 	}
-	g, err := c.good.Get(code)
+	g, err := c.good.Get(ctx, code)
 	if err != nil {
 		if errors.Is(err, cachePkg.ErrUserNotExists) {
 			return "not found"

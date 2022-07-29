@@ -6,7 +6,7 @@
   },
   "tags": [
     {
-      "name": "Catalog"
+      "name": "catalog"
     }
   ],
   "consumes": [
@@ -18,12 +18,13 @@
   "paths": {
     "/v1/Good": {
       "delete": {
-        "operationId": "Catalog_GoodDelete",
+        "operationId": "catalog_GoodDelete",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiGoodDeleteResponse"
+              "type": "object",
+              "properties": {}
             }
           },
           "default": {
@@ -44,16 +45,17 @@
           }
         ],
         "tags": [
-          "Catalog"
+          "catalog"
         ]
       },
       "post": {
-        "operationId": "Catalog_GoodCreate",
+        "operationId": "catalog_GoodCreate",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiGoodCreateResponse"
+              "type": "object",
+              "properties": {}
             }
           },
           "default": {
@@ -74,16 +76,17 @@
           }
         ],
         "tags": [
-          "Catalog"
+          "catalog"
         ]
       },
       "put": {
-        "operationId": "Catalog_GoodUpdate",
+        "operationId": "catalog_GoodUpdate",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiGoodUpdateResponse"
+              "type": "object",
+              "properties": {}
             }
           },
           "default": {
@@ -104,13 +107,13 @@
           }
         ],
         "tags": [
-          "Catalog"
+          "catalog"
         ]
       }
     },
     "/v1/Good/{code}": {
       "get": {
-        "operationId": "Catalog_GoodGet",
+        "operationId": "catalog_GoodGet",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -135,13 +138,13 @@
           }
         ],
         "tags": [
-          "Catalog"
+          "catalog"
         ]
       }
     },
     "/v1/Goods": {
       "get": {
-        "operationId": "Catalog_GoodList",
+        "operationId": "catalog_GoodList",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -157,7 +160,7 @@
           }
         },
         "tags": [
-          "Catalog"
+          "catalog"
         ]
       }
     }
@@ -189,9 +192,6 @@
         }
       }
     },
-    "apiGoodCreateResponse": {
-      "type": "object"
-    },
     "apiGoodDeleteRequest": {
       "type": "object",
       "properties": {
@@ -200,9 +200,6 @@
           "format": "uint64"
         }
       }
-    },
-    "apiGoodDeleteResponse": {
-      "type": "object"
     },
     "apiGoodGetResponse": {
       "type": "object",
@@ -250,9 +247,6 @@
           "type": "string"
         }
       }
-    },
-    "apiGoodUpdateResponse": {
-      "type": "object"
     },
     "protobufAny": {
       "type": "object",

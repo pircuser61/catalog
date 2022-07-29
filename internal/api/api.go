@@ -10,6 +10,7 @@ import (
 	"gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/models"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type implementation struct {
@@ -23,8 +24,8 @@ func New(good goodPkg.Interface) pb.CatalogServer {
 	}
 }
 
-func (i *implementation) GoodCreate(_ context.Context, in *pb.GoodCreateRequest) (*pb.GoodCreateResponse, error) {
-	if err := i.good.Create(models.Good{
+func (i *implementation) GoodCreate(ctx context.Context, in *pb.GoodCreateRequest) (*emptypb.Empty, error) {
+	if err := i.good.Create(ctx, models.Good{
 		Name:          in.GetName(),
 		UnitOfMeasure: in.GetUnitOfMeasure(),
 		Country:       in.GetCountry(),
@@ -38,11 +39,11 @@ func (i *implementation) GoodCreate(_ context.Context, in *pb.GoodCreateRequest)
 
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	return &pb.GoodCreateResponse{}, nil
+	return &emptypb.Empty{}, nil
 }
 
-func (i *implementation) GoodUpdate(_ context.Context, in *pb.GoodUpdateRequest) (*pb.GoodUpdateResponse, error) {
-	if err := i.good.Update(models.Good{
+func (i *implementation) GoodUpdate(ctx context.Context, in *pb.GoodUpdateRequest) (*emptypb.Empty, error) {
+	if err := i.good.Update(ctx, models.Good{
 		Code:          in.GetCode(),
 		Name:          in.GetName(),
 		UnitOfMeasure: in.GetUnitOfMeasure(),
@@ -59,11 +60,11 @@ func (i *implementation) GoodUpdate(_ context.Context, in *pb.GoodUpdateRequest)
 
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	return &pb.GoodUpdateResponse{}, nil
+	return &emptypb.Empty{}, nil
 }
 
-func (i *implementation) GoodDelete(_ context.Context, in *pb.GoodDeleteRequest) (*pb.GoodDeleteResponse, error) {
-	if err := i.good.Delete(in.GetCode()); err != nil {
+func (i *implementation) GoodDelete(ctx context.Context, in *pb.GoodDeleteRequest) (*emptypb.Empty, error) {
+	if err := i.good.Delete(ctx, in.GetCode()); err != nil {
 		if errors.Is(err, models.ErrValidation) {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
@@ -76,17 +77,16 @@ func (i *implementation) GoodDelete(_ context.Context, in *pb.GoodDeleteRequest)
 
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	return &pb.GoodDeleteResponse{}, nil
+	return &emptypb.Empty{}, nil
 }
 
-func (i *implementation) GoodList(context.Context, *pb.GoodListRequest) (*pb.GoodListResponse, error) {
-	goods, err := i.good.List()
+func (i *implementation) GoodList(ctx context.Context, _ *emptypb.Empty) (*pb.GoodListResponse, error) {
+	goods, err := i.good.List(ctx)
 	if err != nil {
 		if errors.Is(err, cache.ErrTimeout) {
 			return nil, status.Error(codes.DeadlineExceeded, err.Error())
 		}
 		return nil, status.Error(codes.Internal, err.Error())
-
 	}
 	result := make([]*pb.GoodListResponse_Good, 0, len(goods))
 	for _, good := range goods {
@@ -100,8 +100,8 @@ func (i *implementation) GoodList(context.Context, *pb.GoodListRequest) (*pb.Goo
 	}, nil
 }
 
-func (i *implementation) GoodGet(_ context.Context, in *pb.GoodGetRequest) (*pb.GoodGetResponse, error) {
-	good, err := i.good.Get(in.GetCode())
+func (i *implementation) GoodGet(ctx context.Context, in *pb.GoodGetRequest) (*pb.GoodGetResponse, error) {
+	good, err := i.good.Get(ctx, in.GetCode())
 	if err != nil {
 		if errors.Is(err, goodPkg.ErrNotFound) {
 			return nil, status.Error(codes.NotFound, err.Error())

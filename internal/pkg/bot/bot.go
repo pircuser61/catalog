@@ -1,6 +1,7 @@
 package commander
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -19,7 +20,7 @@ type commander struct {
 }
 
 type Interface interface {
-	Run() error
+	Run(context.Context) error
 	RgiesterHandler(f commandPkg.Interface)
 	GetCmdList() map[string]string
 }
@@ -44,7 +45,7 @@ func (c *commander) RgiesterHandler(handler commandPkg.Interface) {
 	c.route[handler.Name()] = handler
 }
 
-func (c *commander) Run() error {
+func (c *commander) Run(ctx context.Context) error {
 	updateConfig := tgbotapi.NewUpdate(0)
 	updateConfig.Timeout = 60
 	updatesChannel := c.bot.GetUpdatesChan(updateConfig)
@@ -55,7 +56,7 @@ func (c *commander) Run() error {
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
 		if cmdName := update.Message.Command(); cmdName != "" {
 			if handler, ok := c.route[cmdName]; ok {
-				msg.Text = handler.Process(update.Message.CommandArguments())
+				msg.Text = handler.Process(ctx, update.Message.CommandArguments())
 			} else {
 				msg.Text = UnknownCommand.Error()
 			}
