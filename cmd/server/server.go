@@ -16,9 +16,8 @@ import (
 )
 
 const (
-	grcpAddr    = ":8081"
-	httpAddr    = ":8080"
-	swaggerAddr = ":8082"
+	grcpAddr = ":8081"
+	httpAddr = ":8080"
 )
 
 //go:embed swagger/api/api.swagger.json
@@ -31,27 +30,22 @@ func runGRPCServer(good goodPkg.Interface) {
 	}
 	grpcServer := grpc.NewServer()
 	pb.RegisterCatalogServer(grpcServer, apiPkg.New(good))
+
 	if err = grpcServer.Serve(listener); err != nil {
 		panic(err)
 	}
 }
 
 func runREST(ctx context.Context) {
-	mux := runtime.NewServeMux()
+	gwmux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	if err := pb.RegisterCatalogHandlerFromEndpoint(ctx, mux, grcpAddr, opts); err != nil {
+	if err := pb.RegisterCatalogHandlerFromEndpoint(ctx, gwmux, grcpAddr, opts); err != nil {
 		panic(err)
 	}
-
+	mux := http.NewServeMux()
+	mux.Handle("/swagger/", http.StripPrefix("/swagger", swaggerui.Handler(spec)))
+	mux.Handle("/", gwmux)
 	if err := http.ListenAndServe(httpAddr, mux); err != nil {
-		panic(err)
-	}
-}
-
-func runSwagger() {
-
-	http.Handle("/swagger/", http.StripPrefix("/swagger", swaggerui.Handler(spec)))
-	if err := http.ListenAndServe(swaggerAddr, nil); err != nil {
 		panic(err)
 	}
 }

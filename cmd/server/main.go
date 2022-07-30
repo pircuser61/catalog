@@ -9,10 +9,8 @@ import (
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-
 	good := goodPkg.New()
 	go runBot(ctx, good)
 	go runREST(ctx)
-	go runSwagger()
 	runGRPCServer(good)
 }
