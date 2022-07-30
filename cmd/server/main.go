@@ -13,5 +13,6 @@ func main() {
 	good := goodPkg.New()
 	go runBot(ctx, good)
 	go runREST(ctx)
+	go runSwagger()
 	runGRPCServer(good)
 }
