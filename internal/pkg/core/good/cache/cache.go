@@ -19,6 +19,7 @@ type Interface interface {
 	Update(context.Context, *models.Good) error
 	Delete(context.Context, uint64) error
 	List(context.Context) ([]*models.Good, error)
+	Disconnect(context.Context) error
 
 	/* Методы для тестирования */
 	Lock() string

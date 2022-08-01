@@ -6,6 +6,7 @@ import (
 
 	cachePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/cache"
 	localCachePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/cache/local"
+	postgrePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/cache/postrgre"
 	"gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/models"
 )
 
@@ -16,6 +17,7 @@ type Interface interface {
 	Get(context.Context, uint64) (*models.Good, error)
 	List(context.Context) ([]*models.Good, error)
 	GetCache() cachePkg.Interface
+	Disconnect(context.Context) error
 }
 
 type core struct {
@@ -27,6 +29,12 @@ var ErrNotFound = errors.New("good not found")
 func New() Interface {
 	return &core{
 		cache: localCachePkg.New(),
+	}
+}
+
+func NewPostgre(ctx context.Context) Interface {
+	return &core{
+		cache: postgrePkg.New(ctx),
 	}
 }
 
@@ -68,4 +76,8 @@ func (c *core) List(ctx context.Context) ([]*models.Good, error) {
 
 func (c *core) GetCache() cachePkg.Interface {
 	return c.cache
+}
+
+func (c *core) Disconnect(ctx context.Context) error {
+	return c.Disconnect(ctx)
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 
 	goodPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good"
 )
@@ -9,7 +10,13 @@ import (
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	good := goodPkg.New()
+	good := goodPkg.NewPostgre(ctx)
+	defer func() {
+		err := good.Disconnect(ctx)
+		if err != nil {
+			log.Panic("disconnect?")
+		}
+	}()
 	go runBot(ctx, good)
 	go runREST(ctx)
 	runGRPCServer(good)

@@ -175,3 +175,7 @@ func (c *cache) Delete(ctx context.Context, code uint64) error {
 		return err
 	}
 }
+
+func (c *cache) Disconnect(ctx context.Context) error {
+	return nil
+}

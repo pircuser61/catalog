@@ -11,7 +11,7 @@ var ErrValidation = errors.New("invalid data")
 type Good struct {
 	Code          uint64
 	Name          string
-	UnitOfMeasure string
+	UnitOfMeasure string `db:"unit_of_measure"`
 	Country       string
 }
 
