@@ -37,7 +37,7 @@ func (c *command) Process(ctx context.Context, args string) string {
 	if err != nil {
 		return err.Error()
 	}
-	g, err := c.good.Get(ctx, code)
+	g, err := c.good.GoodGet(ctx, code)
 	if err != nil {
 		if errors.Is(err, cachePkg.ErrUserNotExists) {
 			return "not found"

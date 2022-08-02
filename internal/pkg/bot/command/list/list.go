@@ -25,7 +25,7 @@ func (c *command) Description() string {
 }
 
 func (c *command) Process(ctx context.Context, args string) string {
-	data, err := c.good.List(ctx)
+	data, err := c.good.GoodList(ctx)
 	if err != nil {
 		return err.Error()
 	}

@@ -38,7 +38,7 @@ func (c *command) Process(ctx context.Context, args string) string {
 	if err != nil {
 		return err.Error()
 	}
-	g, err := c.good.Get(ctx, code)
+	g, err := c.good.GoodGet(ctx, code)
 	if err != nil {
 		if errors.Is(err, cachePkg.ErrUserNotExists) {
 			return "not found"
@@ -49,7 +49,7 @@ func (c *command) Process(ctx context.Context, args string) string {
 	g.UnitOfMeasure = params[2]
 	g.Country = params[3]
 
-	if err := c.good.Update(ctx, *g); err != nil {
+	if err := c.good.GoodUpdate(ctx, *g); err != nil {
 		if errors.Is(err, goodPkg.ErrNotFound) {
 			return "not found"
 		}

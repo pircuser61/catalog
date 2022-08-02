@@ -8,6 +8,16 @@ import (
 
 var ErrValidation = errors.New("invalid data")
 
+type UnitOfMeasure struct {
+	Name               string
+	Unit_of_measure_id int
+}
+
+type Country struct {
+	Name       string
+	Country_id int
+}
+
 type Good struct {
 	Code          uint64
 	Name          string

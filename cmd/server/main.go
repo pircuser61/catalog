@@ -10,7 +10,8 @@ import (
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	good := goodPkg.NewPostgre(ctx)
+	//good := goodPkg.NewPostgre(ctx)
+	good := goodPkg.New()
 	defer func() {
 		err := good.Disconnect(ctx)
 		if err != nil {

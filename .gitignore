@@ -1,6 +1,7 @@
 /.idea
 /.vscode
 /.vendor
+api/google
 #.gitignore 
 *exe
 *exe~

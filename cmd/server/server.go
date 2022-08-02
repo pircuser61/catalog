@@ -20,7 +20,7 @@ const (
 	httpAddr = ":8080"
 )
 
-//go:embed swagger/api/api.swagger.json
+//go:embed swagger/api.swagger.json
 var spec []byte
 
 func runGRPCServer(good goodPkg.Interface) {

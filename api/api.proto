@@ -40,6 +40,80 @@ service catalog {
       body: "*"
     };
   }
+
+  /*
+     Country 
+  */
+
+  rpc CountryCreate(CountryCreateRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/country"
+      body: "*"
+    };
+  }
+
+  rpc CountryGet(CountryGetRequest) returns (CountryGetResponse) {
+    option (google.api.http) = {
+      get: "/v1/country/{country_id}"
+    };
+  }
+
+  rpc CountryList(google.protobuf.Empty) returns (CountryListResponse) {
+    option (google.api.http) = {
+      get: "/v1/countries"
+    };
+  }
+
+  rpc CountryUpdate(CountryUpdateRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/v1/country"
+      body: "*"
+    };
+  }
+
+  rpc CountryDelete(CountryDeleteRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/country"
+      body: "*"
+    };
+  }
+
+  /*
+    UnitOfMeasure
+  */
+
+   rpc UnitOfMeasureCreate(UnitOfMeasureCreateRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/unit_of_measure"
+      body: "*"
+    };
+  }
+
+  rpc UnitOfMeasureGet(UnitOfMeasureGetRequest) returns (UnitOfMeasureGetResponse) {
+    option (google.api.http) = {
+      get: "/v1/unit_of_measure/{unit_of_measure_id}"
+    };
+  }
+
+  rpc UnitOfMeasureList(google.protobuf.Empty) returns (UnitOfMeasureListResponse) {
+    option (google.api.http) = {
+      get: "/v1/unit_of_measures"
+    };
+  }
+
+  rpc UnitOfMeasureUpdate(UnitOfMeasureUpdateRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/v1/unit_of_measure"
+      body: "*"
+    };
+  }
+
+  rpc UnitOfMeasureDelete(UnitOfMeasureDeleteRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/unit_of_measure"
+      body: "*"
+    };
+  }
 }
 
 
@@ -54,7 +128,6 @@ message Good {
     string country = 4;
 }
 
-
 // ---------------------------------------------------------------------------------------------------------------------
 // GoodCreate
 // ---------------------------------------------------------------------------------------------------------------------
@@ -64,7 +137,6 @@ message GoodCreateRequest {
     string unit_of_measure = 2;
     string country = 3;
 }
-
 
 // ---------------------------------------------------------------------------------------------------------------------
 // GoodList
@@ -101,7 +173,113 @@ message GoodGetResponse {
 // ---------------------------------------------------------------------------------------------------------------------
 // GoodDelete
 // ---------------------------------------------------------------------------------------------------------------------
+
 message GoodDeleteRequest {
     uint64 code = 1;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Country
+// ---------------------------------------------------------------------------------------------------------------------
+
+message Country {
+    uint32 country_id = 1;
+    string name = 2;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// CountryCreate
+// ---------------------------------------------------------------------------------------------------------------------
+
+message CountryCreateRequest {
+    string name = 1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// CountryList
+// ---------------------------------------------------------------------------------------------------------------------
+
+message CountryListResponse {
+  repeated Country Countries = 1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// CountryUpdate
+// ---------------------------------------------------------------------------------------------------------------------
+
+message CountryUpdateRequest {
+    Country country = 1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// CountryGet
+// ---------------------------------------------------------------------------------------------------------------------
+
+message CountryGetRequest {
+    uint32 country_id = 1;
+}
+
+message CountryGetResponse {
+    Country country = 1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// CountryDelete
+// ---------------------------------------------------------------------------------------------------------------------
+
+message CountryDeleteRequest {
+    uint32 country_id = 1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// UnitOfMeasure
+// ---------------------------------------------------------------------------------------------------------------------
+
+message UnitOfMeasure {
+    uint32 unit_of_measure_id = 1;
+    string name = 2;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// UnitOfMeasureCreate
+// ---------------------------------------------------------------------------------------------------------------------
+
+message UnitOfMeasureCreateRequest {
+    string name = 1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// UnitOfMeasureList
+// ---------------------------------------------------------------------------------------------------------------------
+
+message UnitOfMeasureListResponse {
+  repeated UnitOfMeasure Countries = 1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// UnitOfMeasureUpdate
+// ---------------------------------------------------------------------------------------------------------------------
+
+message UnitOfMeasureUpdateRequest {
+    UnitOfMeasure unit = 1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// UnitOfMeasureGet
+// ---------------------------------------------------------------------------------------------------------------------
+
+message UnitOfMeasureGetRequest {
+    uint32 unit_of_measure_id = 1;
+}
+
+message UnitOfMeasureGetResponse {
+    UnitOfMeasure unit = 1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// UnitOfMeasureDelete
+// ---------------------------------------------------------------------------------------------------------------------
+
+message UnitOfMeasureDeleteRequest {
+    uint32 unit_of_measure_id = 1;
+}

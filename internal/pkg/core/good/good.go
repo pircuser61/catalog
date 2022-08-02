@@ -11,11 +11,11 @@ import (
 )
 
 type Interface interface {
-	Create(context.Context, models.Good) error
-	Update(context.Context, models.Good) error
-	Delete(context.Context, uint64) error
-	Get(context.Context, uint64) (*models.Good, error)
-	List(context.Context) ([]*models.Good, error)
+	GoodCreate(context.Context, models.Good) error
+	GoodUpdate(context.Context, models.Good) error
+	GoodDelete(context.Context, uint64) error
+	GoodGet(context.Context, uint64) (*models.Good, error)
+	GoodList(context.Context) ([]*models.Good, error)
 	GetCache() cachePkg.Interface
 	Disconnect(context.Context) error
 }
@@ -38,31 +38,31 @@ func NewPostgre(ctx context.Context) Interface {
 	}
 }
 
-func (c *core) Create(ctx context.Context, g models.Good) error {
+func (c *core) GoodCreate(ctx context.Context, g models.Good) error {
 	if err := g.Validate(); err != nil {
 		return err
 	}
-	return c.cache.Add(ctx, &g)
+	return c.cache.GoodAdd(ctx, &g)
 }
 
-func (c *core) Get(ctx context.Context, code uint64) (*models.Good, error) {
-	return c.cache.Get(ctx, code)
+func (c *core) GoodGet(ctx context.Context, code uint64) (*models.Good, error) {
+	return c.cache.GoodGet(ctx, code)
 }
 
-func (c *core) Update(ctx context.Context, g models.Good) error {
+func (c *core) GoodUpdate(ctx context.Context, g models.Good) error {
 	err := g.Validate()
 	if err != nil {
 		return err
 	}
-	err = c.cache.Update(ctx, &g)
+	err = c.cache.GoodUpdate(ctx, &g)
 	if err != nil && errors.Is(err, cachePkg.ErrUserNotExists) {
 		return ErrNotFound
 	}
 	return err
 }
 
-func (c *core) Delete(ctx context.Context, code uint64) error {
-	err := c.cache.Delete(ctx, code)
+func (c *core) GoodDelete(ctx context.Context, code uint64) error {
+	err := c.cache.GoodDelete(ctx, code)
 
 	if err != nil && errors.Is(err, cachePkg.ErrUserNotExists) {
 		return ErrNotFound
@@ -70,8 +70,8 @@ func (c *core) Delete(ctx context.Context, code uint64) error {
 	return err
 }
 
-func (c *core) List(ctx context.Context) ([]*models.Good, error) {
-	return c.cache.List(ctx)
+func (c *core) GoodList(ctx context.Context) ([]*models.Good, error) {
+	return c.cache.GoodList(ctx)
 }
 
 func (c *core) GetCache() cachePkg.Interface {

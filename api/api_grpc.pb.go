@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.21.4
-// source: api/api.proto
+// source: api.proto
 
 package api
 
@@ -28,6 +28,16 @@ type CatalogClient interface {
 	GoodList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GoodListResponse, error)
 	GoodUpdate(ctx context.Context, in *GoodUpdateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GoodDelete(ctx context.Context, in *GoodDeleteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	CountryCreate(ctx context.Context, in *CountryCreateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	CountryGet(ctx context.Context, in *CountryGetRequest, opts ...grpc.CallOption) (*CountryGetResponse, error)
+	CountryList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CountryListResponse, error)
+	CountryUpdate(ctx context.Context, in *CountryUpdateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	CountryDelete(ctx context.Context, in *CountryDeleteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UnitOfMeasureCreate(ctx context.Context, in *UnitOfMeasureCreateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UnitOfMeasureGet(ctx context.Context, in *UnitOfMeasureGetRequest, opts ...grpc.CallOption) (*UnitOfMeasureGetResponse, error)
+	UnitOfMeasureList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*UnitOfMeasureListResponse, error)
+	UnitOfMeasureUpdate(ctx context.Context, in *UnitOfMeasureUpdateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UnitOfMeasureDelete(ctx context.Context, in *UnitOfMeasureDeleteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type catalogClient struct {
@@ -83,6 +93,96 @@ func (c *catalogClient) GoodDelete(ctx context.Context, in *GoodDeleteRequest, o
 	return out, nil
 }
 
+func (c *catalogClient) CountryCreate(ctx context.Context, in *CountryCreateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/catalog.api.catalog/CountryCreate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *catalogClient) CountryGet(ctx context.Context, in *CountryGetRequest, opts ...grpc.CallOption) (*CountryGetResponse, error) {
+	out := new(CountryGetResponse)
+	err := c.cc.Invoke(ctx, "/catalog.api.catalog/CountryGet", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *catalogClient) CountryList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CountryListResponse, error) {
+	out := new(CountryListResponse)
+	err := c.cc.Invoke(ctx, "/catalog.api.catalog/CountryList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *catalogClient) CountryUpdate(ctx context.Context, in *CountryUpdateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/catalog.api.catalog/CountryUpdate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *catalogClient) CountryDelete(ctx context.Context, in *CountryDeleteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/catalog.api.catalog/CountryDelete", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *catalogClient) UnitOfMeasureCreate(ctx context.Context, in *UnitOfMeasureCreateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/catalog.api.catalog/UnitOfMeasureCreate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *catalogClient) UnitOfMeasureGet(ctx context.Context, in *UnitOfMeasureGetRequest, opts ...grpc.CallOption) (*UnitOfMeasureGetResponse, error) {
+	out := new(UnitOfMeasureGetResponse)
+	err := c.cc.Invoke(ctx, "/catalog.api.catalog/UnitOfMeasureGet", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *catalogClient) UnitOfMeasureList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*UnitOfMeasureListResponse, error) {
+	out := new(UnitOfMeasureListResponse)
+	err := c.cc.Invoke(ctx, "/catalog.api.catalog/UnitOfMeasureList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *catalogClient) UnitOfMeasureUpdate(ctx context.Context, in *UnitOfMeasureUpdateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/catalog.api.catalog/UnitOfMeasureUpdate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *catalogClient) UnitOfMeasureDelete(ctx context.Context, in *UnitOfMeasureDeleteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/catalog.api.catalog/UnitOfMeasureDelete", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CatalogServer is the server API for Catalog service.
 // All implementations must embed UnimplementedCatalogServer
 // for forward compatibility
@@ -92,6 +192,16 @@ type CatalogServer interface {
 	GoodList(context.Context, *emptypb.Empty) (*GoodListResponse, error)
 	GoodUpdate(context.Context, *GoodUpdateRequest) (*emptypb.Empty, error)
 	GoodDelete(context.Context, *GoodDeleteRequest) (*emptypb.Empty, error)
+	CountryCreate(context.Context, *CountryCreateRequest) (*emptypb.Empty, error)
+	CountryGet(context.Context, *CountryGetRequest) (*CountryGetResponse, error)
+	CountryList(context.Context, *emptypb.Empty) (*CountryListResponse, error)
+	CountryUpdate(context.Context, *CountryUpdateRequest) (*emptypb.Empty, error)
+	CountryDelete(context.Context, *CountryDeleteRequest) (*emptypb.Empty, error)
+	UnitOfMeasureCreate(context.Context, *UnitOfMeasureCreateRequest) (*emptypb.Empty, error)
+	UnitOfMeasureGet(context.Context, *UnitOfMeasureGetRequest) (*UnitOfMeasureGetResponse, error)
+	UnitOfMeasureList(context.Context, *emptypb.Empty) (*UnitOfMeasureListResponse, error)
+	UnitOfMeasureUpdate(context.Context, *UnitOfMeasureUpdateRequest) (*emptypb.Empty, error)
+	UnitOfMeasureDelete(context.Context, *UnitOfMeasureDeleteRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedCatalogServer()
 }
 
@@ -113,6 +223,36 @@ func (UnimplementedCatalogServer) GoodUpdate(context.Context, *GoodUpdateRequest
 }
 func (UnimplementedCatalogServer) GoodDelete(context.Context, *GoodDeleteRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GoodDelete not implemented")
+}
+func (UnimplementedCatalogServer) CountryCreate(context.Context, *CountryCreateRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CountryCreate not implemented")
+}
+func (UnimplementedCatalogServer) CountryGet(context.Context, *CountryGetRequest) (*CountryGetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CountryGet not implemented")
+}
+func (UnimplementedCatalogServer) CountryList(context.Context, *emptypb.Empty) (*CountryListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CountryList not implemented")
+}
+func (UnimplementedCatalogServer) CountryUpdate(context.Context, *CountryUpdateRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CountryUpdate not implemented")
+}
+func (UnimplementedCatalogServer) CountryDelete(context.Context, *CountryDeleteRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CountryDelete not implemented")
+}
+func (UnimplementedCatalogServer) UnitOfMeasureCreate(context.Context, *UnitOfMeasureCreateRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnitOfMeasureCreate not implemented")
+}
+func (UnimplementedCatalogServer) UnitOfMeasureGet(context.Context, *UnitOfMeasureGetRequest) (*UnitOfMeasureGetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnitOfMeasureGet not implemented")
+}
+func (UnimplementedCatalogServer) UnitOfMeasureList(context.Context, *emptypb.Empty) (*UnitOfMeasureListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnitOfMeasureList not implemented")
+}
+func (UnimplementedCatalogServer) UnitOfMeasureUpdate(context.Context, *UnitOfMeasureUpdateRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnitOfMeasureUpdate not implemented")
+}
+func (UnimplementedCatalogServer) UnitOfMeasureDelete(context.Context, *UnitOfMeasureDeleteRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnitOfMeasureDelete not implemented")
 }
 func (UnimplementedCatalogServer) mustEmbedUnimplementedCatalogServer() {}
 
@@ -217,6 +357,186 @@ func _Catalog_GoodDelete_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Catalog_CountryCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CountryCreateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServer).CountryCreate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/catalog.api.catalog/CountryCreate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServer).CountryCreate(ctx, req.(*CountryCreateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Catalog_CountryGet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CountryGetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServer).CountryGet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/catalog.api.catalog/CountryGet",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServer).CountryGet(ctx, req.(*CountryGetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Catalog_CountryList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServer).CountryList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/catalog.api.catalog/CountryList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServer).CountryList(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Catalog_CountryUpdate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CountryUpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServer).CountryUpdate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/catalog.api.catalog/CountryUpdate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServer).CountryUpdate(ctx, req.(*CountryUpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Catalog_CountryDelete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CountryDeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServer).CountryDelete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/catalog.api.catalog/CountryDelete",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServer).CountryDelete(ctx, req.(*CountryDeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Catalog_UnitOfMeasureCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnitOfMeasureCreateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServer).UnitOfMeasureCreate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/catalog.api.catalog/UnitOfMeasureCreate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServer).UnitOfMeasureCreate(ctx, req.(*UnitOfMeasureCreateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Catalog_UnitOfMeasureGet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnitOfMeasureGetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServer).UnitOfMeasureGet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/catalog.api.catalog/UnitOfMeasureGet",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServer).UnitOfMeasureGet(ctx, req.(*UnitOfMeasureGetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Catalog_UnitOfMeasureList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServer).UnitOfMeasureList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/catalog.api.catalog/UnitOfMeasureList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServer).UnitOfMeasureList(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Catalog_UnitOfMeasureUpdate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnitOfMeasureUpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServer).UnitOfMeasureUpdate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/catalog.api.catalog/UnitOfMeasureUpdate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServer).UnitOfMeasureUpdate(ctx, req.(*UnitOfMeasureUpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Catalog_UnitOfMeasureDelete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnitOfMeasureDeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServer).UnitOfMeasureDelete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/catalog.api.catalog/UnitOfMeasureDelete",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServer).UnitOfMeasureDelete(ctx, req.(*UnitOfMeasureDeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Catalog_ServiceDesc is the grpc.ServiceDesc for Catalog service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -244,7 +564,47 @@ var Catalog_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "GoodDelete",
 			Handler:    _Catalog_GoodDelete_Handler,
 		},
+		{
+			MethodName: "CountryCreate",
+			Handler:    _Catalog_CountryCreate_Handler,
+		},
+		{
+			MethodName: "CountryGet",
+			Handler:    _Catalog_CountryGet_Handler,
+		},
+		{
+			MethodName: "CountryList",
+			Handler:    _Catalog_CountryList_Handler,
+		},
+		{
+			MethodName: "CountryUpdate",
+			Handler:    _Catalog_CountryUpdate_Handler,
+		},
+		{
+			MethodName: "CountryDelete",
+			Handler:    _Catalog_CountryDelete_Handler,
+		},
+		{
+			MethodName: "UnitOfMeasureCreate",
+			Handler:    _Catalog_UnitOfMeasureCreate_Handler,
+		},
+		{
+			MethodName: "UnitOfMeasureGet",
+			Handler:    _Catalog_UnitOfMeasureGet_Handler,
+		},
+		{
+			MethodName: "UnitOfMeasureList",
+			Handler:    _Catalog_UnitOfMeasureList_Handler,
+		},
+		{
+			MethodName: "UnitOfMeasureUpdate",
+			Handler:    _Catalog_UnitOfMeasureUpdate_Handler,
+		},
+		{
+			MethodName: "UnitOfMeasureDelete",
+			Handler:    _Catalog_UnitOfMeasureDelete_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/api.proto",
+	Metadata: "api.proto",
 }

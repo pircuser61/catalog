@@ -37,7 +37,7 @@ func (c *command) Process(ctx context.Context, args string) string {
 		return err.Error()
 	}
 
-	if err := c.good.Delete(ctx, code); err != nil {
+	if err := c.good.GoodDelete(ctx, code); err != nil {
 		if errors.Is(err, goodPkg.ErrNotFound) {
 			return "not found"
 		}

@@ -25,7 +25,7 @@ func New(good goodPkg.Interface) pb.CatalogServer {
 }
 
 func (i *implementation) GoodCreate(ctx context.Context, in *pb.GoodCreateRequest) (*emptypb.Empty, error) {
-	if err := i.good.Create(ctx, models.Good{
+	if err := i.good.GoodCreate(ctx, models.Good{
 		Name:          in.GetName(),
 		UnitOfMeasure: in.GetUnitOfMeasure(),
 		Country:       in.GetCountry(),
@@ -47,7 +47,7 @@ func (i *implementation) GoodUpdate(ctx context.Context, in *pb.GoodUpdateReques
 	if inGood == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
-	if err := i.good.Update(ctx, models.Good{
+	if err := i.good.GoodUpdate(ctx, models.Good{
 		Code:          inGood.GetCode(),
 		Name:          inGood.GetName(),
 		UnitOfMeasure: inGood.GetUnitOfMeasure(),
@@ -68,7 +68,7 @@ func (i *implementation) GoodUpdate(ctx context.Context, in *pb.GoodUpdateReques
 }
 
 func (i *implementation) GoodDelete(ctx context.Context, in *pb.GoodDeleteRequest) (*emptypb.Empty, error) {
-	if err := i.good.Delete(ctx, in.GetCode()); err != nil {
+	if err := i.good.GoodDelete(ctx, in.GetCode()); err != nil {
 		if errors.Is(err, models.ErrValidation) {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
@@ -85,7 +85,7 @@ func (i *implementation) GoodDelete(ctx context.Context, in *pb.GoodDeleteReques
 }
 
 func (i *implementation) GoodList(ctx context.Context, _ *emptypb.Empty) (*pb.GoodListResponse, error) {
-	goods, err := i.good.List(ctx)
+	goods, err := i.good.GoodList(ctx)
 	if err != nil {
 		if errors.Is(err, cache.ErrTimeout) {
 			return nil, status.Error(codes.DeadlineExceeded, err.Error())
@@ -105,7 +105,7 @@ func (i *implementation) GoodList(ctx context.Context, _ *emptypb.Empty) (*pb.Go
 }
 
 func (i *implementation) GoodGet(ctx context.Context, in *pb.GoodGetRequest) (*pb.GoodGetResponse, error) {
-	good, err := i.good.Get(ctx, in.GetCode())
+	good, err := i.good.GoodGet(ctx, in.GetCode())
 	if err != nil {
 		if errors.Is(err, goodPkg.ErrNotFound) {
 			return nil, status.Error(codes.NotFound, err.Error())
