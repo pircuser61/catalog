@@ -29,7 +29,7 @@ func New(ctx context.Context) cachePkg.Interface {
 	return &dbPostgre{timeout: tm, conn: conn}
 }
 
-func (c *dbPostgre) Disconnect(ctx context.Context) error {
+func (c *dbPostgre) Close(ctx context.Context) error {
 	defer fmt.Println("Disconnected")
 	return c.conn.Close(ctx)
 }

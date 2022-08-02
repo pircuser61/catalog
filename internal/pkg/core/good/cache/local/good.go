@@ -91,7 +91,7 @@ func (c *cache) GoodGet(ctx context.Context, code uint64) (*models.Good, error) 
 		if ok {
 			return result, nil
 		}
-		return nil, errors.Wrapf(cachePkg.ErrUserNotExists, "code %d", code)
+		return nil, errors.Wrapf(cachePkg.ErrObjNotExists, "code %d", code)
 	}
 
 }
@@ -110,7 +110,7 @@ func (c *cache) GoodUpdate(ctx context.Context, g *models.Good) error {
 		}()
 
 		if _, ok := c.data[g.GetCode()]; !ok {
-			err = errors.Wrapf(cachePkg.ErrUserNotExists, "code %d", g.GetCode())
+			err = errors.Wrapf(cachePkg.ErrObjNotExists, "code %d", g.GetCode())
 		} else {
 			c.data[g.GetCode()] = g
 		}
@@ -141,7 +141,7 @@ func (c *cache) GoodDelete(ctx context.Context, code uint64) error {
 			delete(c.data, code)
 			err = nil
 		} else {
-			err = errors.Wrapf(cachePkg.ErrUserNotExists, "code %d", code)
+			err = errors.Wrapf(cachePkg.ErrObjNotExists, "code %d", code)
 		}
 		okChan <- struct{}{}
 	}()

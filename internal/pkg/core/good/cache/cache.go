@@ -8,9 +8,9 @@ import (
 )
 
 var (
-	ErrUserNotExists = errors.New("good does not exist")
-	ErrUserExists    = errors.New("good exist")
-	ErrTimeout       = errors.New("Timeout")
+	ErrObjNotExists = errors.New("obj does not exist")
+	ErrObjExists    = errors.New("obj exist")
+	ErrTimeout      = errors.New("Timeout")
 )
 
 type Interface interface {
@@ -32,5 +32,5 @@ type Interface interface {
 	UnitOfMeasureDelete(context.Context, uint32) error
 	UnitOfMeasureList(context.Context) ([]*models.UnitOfMeasure, error)
 
-	Disconnect(context.Context) error
+	Close(context.Context) error
 }

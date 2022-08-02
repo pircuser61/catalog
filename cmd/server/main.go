@@ -10,10 +10,10 @@ import (
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	//good := goodPkg.NewPostgre(ctx)
-	good := goodPkg.New()
+	good := goodPkg.NewPostgre(ctx)
+	//good := goodPkg.New()
 	defer func() {
-		err := good.Disconnect(ctx)
+		err := good.Close(ctx)
 		if err != nil {
 			log.Panic("disconnect?")
 		}

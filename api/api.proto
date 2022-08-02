@@ -253,7 +253,7 @@ message UnitOfMeasureCreateRequest {
 // ---------------------------------------------------------------------------------------------------------------------
 
 message UnitOfMeasureListResponse {
-  repeated UnitOfMeasure Countries = 1;
+  repeated UnitOfMeasure Units = 1;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	queryCountryList   = "SELECT country_id, name, FROM country;"
+	queryCountryList   = "SELECT country_id, name FROM country;"
 	queryCountryAdd    = "INSERT INTO country (name) VALUES ($1);"
 	queryCountryGet    = "SELECT name FROM country WHERE country_id = $1;"
 	queryCountryUpdate = "UPDATE country SET name  = $2 WHERE country_id = $1;"
@@ -48,7 +48,7 @@ func (c *dbPostgre) CountryGet(ctx context.Context, code uint32) (*models.Countr
 func (c *dbPostgre) CountryUpdate(ctx context.Context, ct *models.Country) error {
 	ctx, cancel := context.WithTimeout(ctx, c.timeout)
 	defer cancel()
-	if _, err := c.conn.Exec(ctx, queryCountryUpdate, ct.Country_id, ct.Name); err != nil {
+	if _, err := c.conn.Exec(ctx, queryCountryUpdate, ct.CountryId, ct.Name); err != nil {
 		return fmt.Errorf("Country.Update: select: %w", err)
 	}
 	return nil

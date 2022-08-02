@@ -40,7 +40,7 @@ func (c *command) Process(ctx context.Context, args string) string {
 	}
 	g, err := c.good.GoodGet(ctx, code)
 	if err != nil {
-		if errors.Is(err, cachePkg.ErrUserNotExists) {
+		if errors.Is(err, cachePkg.ErrObjNotExists) {
 			return "not found"
 		}
 		return "internal error"

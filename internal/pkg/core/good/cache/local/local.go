@@ -33,6 +33,6 @@ func (c *cache) GetNextCode() uint64 {
 	return c.lastCode
 }
 
-func (c *cache) Disconnect(ctx context.Context) error {
+func (c *cache) Close(ctx context.Context) error {
 	return nil
 }

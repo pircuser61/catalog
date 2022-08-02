@@ -9,13 +9,13 @@ import (
 var ErrValidation = errors.New("invalid data")
 
 type UnitOfMeasure struct {
-	Name               string
-	Unit_of_measure_id int
+	Name            string
+	UnitOfMeasureId uint32
 }
 
 type Country struct {
-	Name       string
-	Country_id int
+	Name      string
+	CountryId uint32
 }
 
 type Good struct {
@@ -34,7 +34,7 @@ func (g *Good) SetCode(code uint64) error {
 	return nil
 }
 
-func (g Good) Validate() error {
+func (g *Good) Validate() error {
 	if len(g.Name) < 3 || len(g.Name) > 40 {
 		return errors.WithMessagef(ErrValidation, "bad name <%v>", g.Name)
 	}
@@ -63,4 +63,18 @@ func (g *Good) GetUnitOfMeasure() string {
 
 func (g *Good) GetCountry() string {
 	return g.Country
+}
+
+func (ct *Country) Validate() error {
+	if len(ct.Name) < 3 || len(ct.Name) > 20 {
+		return errors.WithMessagef(ErrValidation, "bad country name <%v>", ct.Name)
+	}
+	return nil
+}
+
+func (uom *UnitOfMeasure) Validate() error {
+	if len(uom.Name) > 10 {
+		return errors.WithMessagef(ErrValidation, "bad unit of measure name <%v>", uom.Name)
+	}
+	return nil
 }

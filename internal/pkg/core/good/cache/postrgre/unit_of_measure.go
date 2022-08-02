@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	queryUnitOfMeasureList   = "SELECT unit_of_measure_id, name, FROM unit_of_measure;"
+	queryUnitOfMeasureList   = "SELECT unit_of_measure_id, name FROM unit_of_measure;"
 	queryUnitOfMeasureAdd    = "INSERT INTO unit_of_measure (name) VALUES ($1);"
 	queryUnitOfMeasureGet    = "SELECT name FROM unit_of_measure WHERE unit_of_measure_id = $1;"
 	queryUnitOfMeasureUpdate = "UPDATE unit_of_measure SET name  = $2 WHERE unit_of_measure_id = $1;"
@@ -48,7 +48,7 @@ func (c *dbPostgre) UnitOfMeasureGet(ctx context.Context, code uint32) (*models.
 func (c *dbPostgre) UnitOfMeasureUpdate(ctx context.Context, ct *models.UnitOfMeasure) error {
 	ctx, cancel := context.WithTimeout(ctx, c.timeout)
 	defer cancel()
-	if _, err := c.conn.Exec(ctx, queryUnitOfMeasureUpdate, ct.Unit_of_measure_id, ct.Name); err != nil {
+	if _, err := c.conn.Exec(ctx, queryUnitOfMeasureUpdate, ct.UnitOfMeasureId, ct.Name); err != nil {
 		return fmt.Errorf("UnitOfMeasure.Update: select: %w", err)
 	}
 	return nil

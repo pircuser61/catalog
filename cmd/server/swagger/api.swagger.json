@@ -620,7 +620,7 @@
     "apiUnitOfMeasureListResponse": {
       "type": "object",
       "properties": {
-        "Countries": {
+        "Units": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/apiUnitOfMeasure"
