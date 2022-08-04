@@ -9,8 +9,9 @@ import (
 	"github.com/flowchartsman/swaggerui"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	pb "gitlab.ozon.dev/pircuser61/catalog/api"
-	apiPkg "gitlab.ozon.dev/pircuser61/catalog/internal/api"
-	goodPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good"
+	grpcApiPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/grpc"
+
+	storePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -23,13 +24,13 @@ const (
 //go:embed swagger/api.swagger.json
 var spec []byte
 
-func runGRPCServer(good goodPkg.Interface) {
+func runGRPCServer(ctx context.Context, store storePkg.Interface) {
 	listener, err := net.Listen("tcp", grcpAddr)
 	if err != nil {
 		panic(err)
 	}
 	grpcServer := grpc.NewServer()
-	pb.RegisterCatalogServer(grpcServer, apiPkg.New(good))
+	pb.RegisterCatalogServer(grpcServer, grpcApiPkg.New(ctx, store))
 
 	if err = grpcServer.Serve(listener); err != nil {
 		panic(err)

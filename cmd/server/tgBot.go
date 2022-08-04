@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"context"
 	"log"
@@ -42,3 +43,4 @@ func runBot(ctx context.Context, good goodPkg.Interface) {
 		log.Panic(err)
 	}
 }
+*/

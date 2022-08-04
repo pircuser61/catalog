@@ -4,21 +4,21 @@ import (
 	"context"
 	"log"
 
-	goodPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good"
+	postgreStorePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage/postgre"
 )
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	good := goodPkg.NewPostgre(ctx)
-	//good := goodPkg.New()
+
+	store := postgreStorePkg.New(ctx)
 	defer func() {
-		err := good.Close(ctx)
+		err := store.Close(ctx)
 		if err != nil {
 			log.Panic("disconnect?")
 		}
 	}()
-	go runBot(ctx, good)
+	//go runBot(ctx, good)
 	go runREST(ctx)
-	runGRPCServer(good)
+	runGRPCServer(ctx, store)
 }
