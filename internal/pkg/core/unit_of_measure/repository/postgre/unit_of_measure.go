@@ -77,9 +77,14 @@ func (c *UnitOfMeasureRepository) Update(ctx context.Context, ct *models.UnitOfM
 func (c *UnitOfMeasureRepository) Delete(ctx context.Context, code uint32) error {
 	ctx, cancel := context.WithTimeout(ctx, c.timeout)
 	defer cancel()
-	if _, err := c.conn.Exec(ctx, queryDelete, code); err != nil {
+	commandTag, err := c.conn.Exec(ctx, queryDelete, code)
+	if err != nil {
 		return fmt.Errorf("UnitOfMeasure.Delete: select: %w", err)
 	}
+	if commandTag.RowsAffected() != 1 {
+		return storePkg.ErrNotExists
+	}
+
 	return nil
 }
 

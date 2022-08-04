@@ -25,7 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type CatalogClient interface {
 	GoodCreate(ctx context.Context, in *GoodCreateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GoodGet(ctx context.Context, in *GoodGetRequest, opts ...grpc.CallOption) (*GoodGetResponse, error)
-	GoodList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GoodListResponse, error)
+	GoodList(ctx context.Context, in *GoodListRequest, opts ...grpc.CallOption) (*GoodListResponse, error)
 	GoodUpdate(ctx context.Context, in *GoodUpdateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GoodDelete(ctx context.Context, in *GoodDeleteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	CountryCreate(ctx context.Context, in *CountryCreateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -66,7 +66,7 @@ func (c *catalogClient) GoodGet(ctx context.Context, in *GoodGetRequest, opts ..
 	return out, nil
 }
 
-func (c *catalogClient) GoodList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GoodListResponse, error) {
+func (c *catalogClient) GoodList(ctx context.Context, in *GoodListRequest, opts ...grpc.CallOption) (*GoodListResponse, error) {
 	out := new(GoodListResponse)
 	err := c.cc.Invoke(ctx, "/catalog.api.catalog/GoodList", in, out, opts...)
 	if err != nil {
@@ -189,7 +189,7 @@ func (c *catalogClient) UnitOfMeasureDelete(ctx context.Context, in *UnitOfMeasu
 type CatalogServer interface {
 	GoodCreate(context.Context, *GoodCreateRequest) (*emptypb.Empty, error)
 	GoodGet(context.Context, *GoodGetRequest) (*GoodGetResponse, error)
-	GoodList(context.Context, *emptypb.Empty) (*GoodListResponse, error)
+	GoodList(context.Context, *GoodListRequest) (*GoodListResponse, error)
 	GoodUpdate(context.Context, *GoodUpdateRequest) (*emptypb.Empty, error)
 	GoodDelete(context.Context, *GoodDeleteRequest) (*emptypb.Empty, error)
 	CountryCreate(context.Context, *CountryCreateRequest) (*emptypb.Empty, error)
@@ -215,7 +215,7 @@ func (UnimplementedCatalogServer) GoodCreate(context.Context, *GoodCreateRequest
 func (UnimplementedCatalogServer) GoodGet(context.Context, *GoodGetRequest) (*GoodGetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GoodGet not implemented")
 }
-func (UnimplementedCatalogServer) GoodList(context.Context, *emptypb.Empty) (*GoodListResponse, error) {
+func (UnimplementedCatalogServer) GoodList(context.Context, *GoodListRequest) (*GoodListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GoodList not implemented")
 }
 func (UnimplementedCatalogServer) GoodUpdate(context.Context, *GoodUpdateRequest) (*emptypb.Empty, error) {
@@ -304,7 +304,7 @@ func _Catalog_GoodGet_Handler(srv interface{}, ctx context.Context, dec func(int
 }
 
 func _Catalog_GoodList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(GoodListRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -316,7 +316,7 @@ func _Catalog_GoodList_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: "/catalog.api.catalog/GoodList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CatalogServer).GoodList(ctx, req.(*emptypb.Empty))
+		return srv.(CatalogServer).GoodList(ctx, req.(*GoodListRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

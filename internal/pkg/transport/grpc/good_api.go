@@ -73,8 +73,8 @@ func (i *Implementation) GoodDelete(ctx context.Context, in *pb.GoodDeleteReques
 	return &emptypb.Empty{}, nil
 }
 
-func (i *Implementation) GoodList(ctx context.Context, _ *emptypb.Empty) (*pb.GoodListResponse, error) {
-	goods, err := i.good.List(ctx)
+func (i *Implementation) GoodList(ctx context.Context, request *pb.GoodListRequest) (*pb.GoodListResponse, error) {
+	goods, err := i.good.ListEx(ctx, request.GetLimit(), request.GetOffset())
 	if err != nil {
 		if errors.Is(err, storePkg.ErrTimeout) {
 			return nil, status.Error(codes.DeadlineExceeded, err.Error())

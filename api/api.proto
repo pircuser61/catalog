@@ -21,7 +21,7 @@ service catalog {
     };
   }
 
-  rpc GoodList(google.protobuf.Empty) returns (GoodListResponse) {
+  rpc GoodList(GoodListRequest) returns (GoodListResponse) {
     option (google.api.http) = {
       get: "/v1/goods"
     };
@@ -141,7 +141,10 @@ message GoodCreateRequest {
 // ---------------------------------------------------------------------------------------------------------------------
 // GoodList
 // ---------------------------------------------------------------------------------------------------------------------
-
+message GoodListRequest{
+   uint64 limit = 1;
+   uint64 offset = 2;
+}
 message GoodListResponse {
   repeated Good Goods = 1;
 

@@ -27,14 +27,32 @@ func New(repository goodPkg.Repository,
 	}
 }
 
-func (c *GoodUseCase) Add(ctx context.Context, g *models.Good) error {
-
-	uom_id, country_id, err := c.GetFieldsId(ctx, g)
+func (c *GoodUseCase) Add(ctx context.Context, good *models.Good) error {
+	err := good.Validate()
 	if err != nil {
 		return err
 	}
 
-	return c.repository.Add(ctx, g.Name, uom_id, country_id)
+	keys, err := c.repository.GetKeys(ctx, good)
+	if err != nil {
+		return err
+	}
+
+	return c.repository.Add(ctx, good, keys)
+}
+
+func (c *GoodUseCase) Update(ctx context.Context, good *models.Good) error {
+	err := good.Validate()
+	if err != nil {
+		return err
+	}
+
+	keys, err := c.repository.GetKeys(ctx, good)
+	if err != nil {
+		return err
+	}
+
+	return c.repository.Update(ctx, good, keys)
 }
 
 func (c *GoodUseCase) Get(ctx context.Context, code uint64) (*models.Good, error) {
@@ -43,20 +61,6 @@ func (c *GoodUseCase) Get(ctx context.Context, code uint64) (*models.Good, error
 		return nil, goodPkg.ErrGoodNotFound
 	}
 	return result, err
-}
-
-func (c *GoodUseCase) Update(ctx context.Context, g *models.Good) error {
-
-	uom_id, country_id, err := c.GetFieldsId(ctx, g)
-	if err != nil {
-		return err
-	}
-
-	err = c.repository.Update(ctx, g.Code, g.Name, uom_id, country_id)
-	if err != nil && errors.Is(err, storePkg.ErrNotExists) {
-		return goodPkg.ErrGoodNotFound
-	}
-	return err
 }
 
 func (c *GoodUseCase) Delete(ctx context.Context, code uint64) error {
@@ -72,27 +76,6 @@ func (c *GoodUseCase) List(ctx context.Context) ([]*models.Good, error) {
 	return c.repository.List(ctx)
 }
 
-func (c *GoodUseCase) GetFieldsId(ctx context.Context, g *models.Good) (uint32, uint32, error) {
-	if err := g.Validate(); err != nil {
-		return 0, 0, err
-	}
-	uom, err := c.uomRepository.GetByName(ctx, g.UnitOfMeasure)
-	if err != nil {
-		if errors.Is(err, storePkg.ErrNotExists) {
-			return 0, 0, errors.WithMessagef(models.ErrValidation,
-				"Единица измерения %s не найдена в справочнике",
-				g.UnitOfMeasure)
-		}
-		return 0, 0, err
-	}
-	country, err := c.countryRepository.GetByNane(ctx, g.Country)
-	if err != nil {
-		if errors.Is(err, storePkg.ErrNotExists) {
-			return 0, 0, errors.WithMessagef(models.ErrValidation,
-				"Страна %s не найдена в справочнике",
-				g.Country)
-		}
-		return 0, 0, err
-	}
-	return uom.UnitOfMeasureId, country.CountryId, nil
+func (c *GoodUseCase) ListEx(ctx context.Context, limit uint64, offset uint64) ([]*models.Good, error) {
+	return c.repository.ListEx(ctx, limit, offset)
 }

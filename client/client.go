@@ -25,7 +25,8 @@ func main() {
 	var line string
 	in := bufio.NewScanner(os.Stdin)
 
-	defer func() { fmt.Println("...press enter"); in.Scan() }()
+	//defer func() { fmt.Println("...press enter"); in.Scan() }()
+_cmd:
 	for {
 		fmt.Print("\n>")
 
@@ -41,7 +42,40 @@ func main() {
 		case "q":
 			return
 		case "list":
-			response, err := client.GoodList(ctx, &emptypb.Empty{})
+			request := pb.GoodListRequest{}
+			params := strings.Split(line, " ")
+			len := len(params)
+			for i := 1; i < len; i += 2 {
+				switch params[i] {
+				case "limit":
+					if i+1 >= len {
+						fmt.Println("<limit> must be a number")
+						continue _cmd
+					}
+					limit, err := strconv.ParseUint(params[i+1], 10, 64)
+					if err != nil {
+						fmt.Println("<limit> must be a number")
+						continue _cmd
+					}
+					request.Limit = limit
+				case "offset":
+					if i+1 >= len {
+						fmt.Println("<offset> must be a number")
+						continue _cmd
+					}
+					offset, err := strconv.ParseUint(params[i+1], 10, 64)
+					if err != nil {
+						fmt.Println("<offset> must be a number")
+						continue _cmd
+					}
+					request.Offset = offset
+				default:
+					fmt.Printf("invalid list param <%s>, avail 'limit <int>', 'offset <int>'", params[i])
+					continue _cmd
+				}
+			}
+
+			response, err := client.GoodList(ctx, &request)
 			if err == nil {
 				fmt.Printf("response: [%v]", response)
 			} else {
