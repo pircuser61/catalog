@@ -38,7 +38,7 @@ func (c *UnitOfMeasureRepository) List(ctx context.Context) ([]*models.UnitOfMea
 	defer cancel()
 	var result []*models.UnitOfMeasure
 	if err := pgxscan.Select(ctx, c.conn, &result, queryList); err != nil {
-		return nil, fmt.Errorf("UnitOfMeasure.List: select: %w", err)
+		return nil, fmt.Errorf("UnitOfMeasure.List: %w", err)
 	}
 	return result, nil
 }
@@ -47,7 +47,7 @@ func (c *UnitOfMeasureRepository) Add(ctx context.Context, ct *models.UnitOfMeas
 	ctx, cancel := context.WithTimeout(ctx, c.timeout)
 	defer cancel()
 	if _, err := c.conn.Exec(ctx, queryAdd, ct.Name); err != nil {
-		return fmt.Errorf("UnitOfMeasure.Add: select: %w", err)
+		return fmt.Errorf("UnitOfMeasure.Add: %w", err)
 	}
 	return nil
 }
@@ -69,7 +69,7 @@ func (c *UnitOfMeasureRepository) Update(ctx context.Context, ct *models.UnitOfM
 	ctx, cancel := context.WithTimeout(ctx, c.timeout)
 	defer cancel()
 	if _, err := c.conn.Exec(ctx, queryUpdate, ct.UnitOfMeasureId, ct.Name); err != nil {
-		return fmt.Errorf("UnitOfMeasure.Update: select: %w", err)
+		return fmt.Errorf("UnitOfMeasure.Update: %w", err)
 	}
 	return nil
 }
@@ -79,7 +79,7 @@ func (c *UnitOfMeasureRepository) Delete(ctx context.Context, code uint32) error
 	defer cancel()
 	commandTag, err := c.conn.Exec(ctx, queryDelete, code)
 	if err != nil {
-		return fmt.Errorf("UnitOfMeasure.Delete: select: %w", err)
+		return fmt.Errorf("UnitOfMeasure.Delete: %w", err)
 	}
 	if commandTag.RowsAffected() != 1 {
 		return storePkg.ErrNotExists

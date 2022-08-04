@@ -38,7 +38,7 @@ func (c *CountryRepository) List(ctx context.Context) ([]*models.Country, error)
 	defer cancel()
 	var result []*models.Country
 	if err := pgxscan.Select(ctx, c.conn, &result, queryList); err != nil {
-		return nil, fmt.Errorf("Country.List: select: %w", err)
+		return nil, fmt.Errorf("Country.List: %w", err)
 	}
 	return result, nil
 }
@@ -47,7 +47,7 @@ func (c *CountryRepository) Add(ctx context.Context, ct *models.Country) error {
 	ctx, cancel := context.WithTimeout(ctx, c.timeout)
 	defer cancel()
 	if _, err := c.conn.Exec(ctx, queryAdd, ct.Name); err != nil {
-		return fmt.Errorf("Country.Add: select: %w", err)
+		return fmt.Errorf("Country.Add: %w", err)
 	}
 	return nil
 }
@@ -69,7 +69,7 @@ func (c *CountryRepository) Update(ctx context.Context, ct *models.Country) erro
 	ctx, cancel := context.WithTimeout(ctx, c.timeout)
 	defer cancel()
 	if _, err := c.conn.Exec(ctx, queryUpdate, ct.CountryId, ct.Name); err != nil {
-		return fmt.Errorf("Country.Update: select: %w", err)
+		return fmt.Errorf("Country.Update: %w", err)
 	}
 	return nil
 }
@@ -79,7 +79,7 @@ func (c *CountryRepository) Delete(ctx context.Context, code uint32) error {
 	defer cancel()
 	commandTag, err := c.conn.Exec(ctx, queryDelete, code)
 	if err != nil {
-		return fmt.Errorf("Country.Delete: select: %w", err)
+		return fmt.Errorf("Country.Delete: %w", err)
 	}
 	if commandTag.RowsAffected() != 1 {
 		return storePkg.ErrNotExists
@@ -87,7 +87,7 @@ func (c *CountryRepository) Delete(ctx context.Context, code uint32) error {
 	return nil
 }
 
-func (c *CountryRepository) GetByNane(ctx context.Context, name string) (*models.Country, error) {
+func (c *CountryRepository) GetByName(ctx context.Context, name string) (*models.Country, error) {
 	ctx, cancel := context.WithTimeout(ctx, c.timeout)
 	defer cancel()
 	result := models.Country{}

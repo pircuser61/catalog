@@ -51,7 +51,7 @@ func (c *GoodsRepository) Update(ctx context.Context, good *models.Good, keys *g
 	defer cancel()
 	commandTag, err := c.conn.Exec(ctx, queryUpdate, good.Code, good.Name, keys.UnitOfMeasureId, keys.CountryId)
 	if err != nil {
-		return fmt.Errorf("Good.Update: select: %w", err)
+		return fmt.Errorf("Good.Update: %w", err)
 	}
 	if commandTag.RowsAffected() != 1 {
 		return storePkg.ErrNotExists
@@ -78,7 +78,7 @@ func (c *GoodsRepository) Delete(ctx context.Context, code uint64) error {
 	defer cancel()
 	commandTag, err := c.conn.Exec(ctx, queryDelete, code)
 	if err != nil {
-		return fmt.Errorf("Good.Delete: select: %w", err)
+		return fmt.Errorf("Good.Delete: %w", err)
 	}
 	if commandTag.RowsAffected() != 1 {
 		return storePkg.ErrNotExists
@@ -91,7 +91,7 @@ func (c *GoodsRepository) List(ctx context.Context) ([]*models.Good, error) {
 	defer cancel()
 	var result []*models.Good
 	if err := pgxscan.Select(ctx, c.conn, &result, queryList); err != nil {
-		return nil, fmt.Errorf("Good.List: select: %w", err)
+		return nil, fmt.Errorf("Good.List: %w", err)
 	}
 	return result, nil
 }
@@ -119,7 +119,7 @@ func (c *GoodsRepository) ListEx(ctx context.Context, limit uint64, offset uint6
 	defer cancel()
 	var result []*models.Good
 	if err := pgxscan.Select(ctx, c.conn, &result, query, args...); err != nil {
-		return nil, fmt.Errorf("Good.List: select: %w", err)
+		return nil, fmt.Errorf("Good.List:  %w", err)
 	}
 	return result, nil
 }
