@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 
 	postgreStorePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage/postgre"
 )
@@ -13,10 +12,7 @@ func main() {
 
 	store := postgreStorePkg.New(ctx)
 	defer func() {
-		err := store.Close(ctx)
-		if err != nil {
-			log.Panic("disconnect?")
-		}
+		store.Close(ctx)
 	}()
 	//go runBot(ctx, good)
 	go runREST(ctx)
