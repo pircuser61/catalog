@@ -17,7 +17,6 @@ type Repository interface {
 	Get(context.Context, uint64) (*models.Good, error)
 	Update(context.Context, *models.Good, *GoodKeys) error
 	Delete(context.Context, uint64) error
-	List(context.Context) ([]*models.Good, error)
 	GetKeys(ctx context.Context, good *models.Good) (*GoodKeys, error)
-	ListEx(context.Context, uint64, uint64) ([]*models.Good, error)
+	List(context.Context, uint64, uint64) ([]*models.Good, error)
 }

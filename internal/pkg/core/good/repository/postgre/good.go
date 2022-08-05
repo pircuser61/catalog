@@ -86,17 +86,7 @@ func (c *GoodsRepository) Delete(ctx context.Context, code uint64) error {
 	return nil
 }
 
-func (c *GoodsRepository) List(ctx context.Context) ([]*models.Good, error) {
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
-	defer cancel()
-	var result []*models.Good
-	if err := pgxscan.Select(ctx, c.conn, &result, queryList); err != nil {
-		return nil, fmt.Errorf("Good.List: %w", err)
-	}
-	return result, nil
-}
-
-func (c *GoodsRepository) ListEx(ctx context.Context, limit uint64, offset uint64) ([]*models.Good, error) {
+func (c *GoodsRepository) List(ctx context.Context, limit uint64, offset uint64) ([]*models.Good, error) {
 	qBuilder := squirrel.Select("code, good.name").
 		From("good").
 		JoinClause("LEFT OUTER JOIN country USING (country_id)").

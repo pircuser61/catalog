@@ -12,8 +12,7 @@ type Interface interface {
 	Get(context.Context, uint64) (*models.Good, error)
 	Update(context.Context, *models.Good) error
 	Delete(context.Context, uint64) error
-	List(context.Context) ([]*models.Good, error)
-	ListEx(context.Context, uint64, uint64) ([]*models.Good, error)
+	List(context.Context, uint64, uint64) ([]*models.Good, error)
 }
 
 var ErrGoodNotFound = errors.New("GoodPkg not found")

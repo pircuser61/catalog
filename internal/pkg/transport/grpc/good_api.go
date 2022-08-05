@@ -74,7 +74,7 @@ func (i *Implementation) GoodDelete(ctx context.Context, in *pb.GoodDeleteReques
 }
 
 func (i *Implementation) GoodList(ctx context.Context, request *pb.GoodListRequest) (*pb.GoodListResponse, error) {
-	goods, err := i.good.ListEx(ctx, request.GetLimit(), request.GetOffset())
+	goods, err := i.good.List(ctx, request.GetLimit(), request.GetOffset())
 	if err != nil {
 		if errors.Is(err, storePkg.ErrTimeout) {
 			return nil, status.Error(codes.DeadlineExceeded, err.Error())

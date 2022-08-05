@@ -72,10 +72,6 @@ func (c *GoodUseCase) Delete(ctx context.Context, code uint64) error {
 	return err
 }
 
-func (c *GoodUseCase) List(ctx context.Context) ([]*models.Good, error) {
-	return c.repository.List(ctx)
-}
-
-func (c *GoodUseCase) ListEx(ctx context.Context, limit uint64, offset uint64) ([]*models.Good, error) {
-	return c.repository.ListEx(ctx, limit, offset)
+func (c *GoodUseCase) List(ctx context.Context, limit uint64, offset uint64) ([]*models.Good, error) {
+	return c.repository.List(ctx, limit, offset)
 }
