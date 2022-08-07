@@ -229,8 +229,12 @@ _cmd:
 				fmt.Printf("invalid args %d items <%v>", len(params), params)
 				continue
 			}
-			params[0] = ""
-			request := strings.Join(params, " ") // для тестов с SQL
+			request := params[1]
+			for i, param := range params {
+				if i > 1 {
+					request = request + " " + param
+				} // для тестов с SQL
+			}
 			response, err := client.CountryGetByName(ctx, &pb.CountryByNameRequest{CountryName: request})
 			if err == nil {
 				fmt.Printf("response: [%v]", response.Country)

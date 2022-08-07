@@ -13,13 +13,13 @@ import (
 )
 
 type UnitOfMeasureRepository struct {
-	conn    *pgxpool.Pool
+	pool    *pgxpool.Pool
 	timeout time.Duration
 }
 
 func New(pgxConnextion *pgxpool.Pool, timeout time.Duration) unitOfMeasurePkg.Repository {
 	return &UnitOfMeasureRepository{
-		conn:    pgxConnextion,
+		pool:    pgxConnextion,
 		timeout: timeout,
 	}
 }
@@ -35,14 +35,14 @@ const (
 
 func (c *UnitOfMeasureRepository) List(ctx context.Context) ([]*models.UnitOfMeasure, error) {
 	var result []*models.UnitOfMeasure
-	if err := pgxscan.Select(ctx, c.conn, &result, queryList); err != nil {
+	if err := pgxscan.Select(ctx, c.pool, &result, queryList); err != nil {
 		return nil, fmt.Errorf("UnitOfMeasure.List: %w", err)
 	}
 	return result, nil
 }
 
 func (c *UnitOfMeasureRepository) Add(ctx context.Context, ct *models.UnitOfMeasure) error {
-	if _, err := c.conn.Exec(ctx, queryAdd, ct.Name); err != nil {
+	if _, err := c.pool.Exec(ctx, queryAdd, ct.Name); err != nil {
 		return fmt.Errorf("UnitOfMeasure.Add: %w", err)
 	}
 	return nil
@@ -50,7 +50,7 @@ func (c *UnitOfMeasureRepository) Add(ctx context.Context, ct *models.UnitOfMeas
 
 func (c *UnitOfMeasureRepository) Get(ctx context.Context, code uint32) (*models.UnitOfMeasure, error) {
 	result := models.UnitOfMeasure{}
-	if err := pgxscan.Get(ctx, c.conn, &result, queryGet, code); err != nil {
+	if err := pgxscan.Get(ctx, c.pool, &result, queryGet, code); err != nil {
 		if pgxscan.NotFound(err) {
 			return nil, storePkg.ErrNotExists
 		}
@@ -60,14 +60,14 @@ func (c *UnitOfMeasureRepository) Get(ctx context.Context, code uint32) (*models
 }
 
 func (c *UnitOfMeasureRepository) Update(ctx context.Context, ct *models.UnitOfMeasure) error {
-	if _, err := c.conn.Exec(ctx, queryUpdate, ct.UnitOfMeasureId, ct.Name); err != nil {
+	if _, err := c.pool.Exec(ctx, queryUpdate, ct.UnitOfMeasureId, ct.Name); err != nil {
 		return fmt.Errorf("UnitOfMeasure.Update: %w", err)
 	}
 	return nil
 }
 
 func (c *UnitOfMeasureRepository) Delete(ctx context.Context, code uint32) error {
-	commandTag, err := c.conn.Exec(ctx, queryDelete, code)
+	commandTag, err := c.pool.Exec(ctx, queryDelete, code)
 	if err != nil {
 		return fmt.Errorf("UnitOfMeasure.Delete: %w", err)
 	}
@@ -80,7 +80,7 @@ func (c *UnitOfMeasureRepository) Delete(ctx context.Context, code uint32) error
 
 func (c *UnitOfMeasureRepository) GetByName(ctx context.Context, name string) (*models.UnitOfMeasure, error) {
 	result := models.UnitOfMeasure{}
-	if err := pgxscan.Get(ctx, c.conn, &result, queryByName, name); err != nil {
+	if err := pgxscan.Get(ctx, c.pool, &result, queryByName, name); err != nil {
 		if pgxscan.NotFound(err) {
 			return nil, storePkg.ErrNotExists
 		}
