@@ -24,7 +24,7 @@ const (
 //go:embed swagger/api.swagger.json
 var spec []byte
 
-func runGRPCServer(ctx context.Context, store storePkg.Interface) {
+func runGRPCServer(ctx context.Context, store *storePkg.Core) {
 	listener, err := net.Listen("tcp", grcpAddr)
 	if err != nil {
 		panic(err)

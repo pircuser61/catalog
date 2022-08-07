@@ -133,6 +133,36 @@
         ]
       }
     },
+    "/v1/country/name/{countryName}": {
+      "get": {
+        "operationId": "catalog_CountryGetByName",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiCountryGetResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "countryName",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
     "/v1/country/{countryId}": {
       "get": {
         "operationId": "catalog_CountryGet",

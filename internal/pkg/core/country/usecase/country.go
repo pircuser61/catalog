@@ -57,3 +57,11 @@ func (c *CountryUseCase) Get(ctx context.Context, country_id uint32) (*models.Co
 func (c *CountryUseCase) List(ctx context.Context) ([]*models.Country, error) {
 	return c.repository.List(ctx)
 }
+
+func (c *CountryUseCase) GetByName(ctx context.Context, countryName string) (*models.Country, error) {
+	result, err := c.repository.GetByName(ctx, countryName)
+	if err != nil && errors.Is(err, storePkg.ErrNotExists) {
+		return nil, countryPkg.ErrCountryNotFound
+	}
+	return result, err
+}

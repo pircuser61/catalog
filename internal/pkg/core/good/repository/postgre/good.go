@@ -7,7 +7,7 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/georgysavva/scany/pgxscan"
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/pkg/errors"
 	goodPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good"
 	"gitlab.ozon.dev/pircuser61/catalog/internal/pkg/models"
@@ -15,13 +15,13 @@ import (
 )
 
 type GoodsRepository struct {
-	conn    *pgx.Conn
+	pool    *pgxpool.Pool
 	timeout time.Duration
 }
 
-func New(pgxConnextion *pgx.Conn, timeout time.Duration) goodPkg.Repository {
+func New(pgxConnextion *pgxpool.Pool, timeout time.Duration) goodPkg.Repository {
 	return &GoodsRepository{
-		conn:    pgxConnextion,
+		pool:    pgxConnextion,
 		timeout: timeout,
 	}
 }
@@ -40,16 +40,12 @@ const (
 )
 
 func (c *GoodsRepository) Add(ctx context.Context, good *models.Good, keys *goodPkg.GoodKeys) error {
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
-	defer cancel()
-	_, err := c.conn.Exec(ctx, queryAdd, good.Name, *keys.UnitOfMeasureId, *keys.CountryId)
+	_, err := c.pool.Exec(ctx, queryAdd, good.Name, *keys.UnitOfMeasureId, *keys.CountryId)
 	return err
 }
 
 func (c *GoodsRepository) Update(ctx context.Context, good *models.Good, keys *goodPkg.GoodKeys) error {
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
-	defer cancel()
-	commandTag, err := c.conn.Exec(ctx, queryUpdate, good.Code, good.Name, keys.UnitOfMeasureId, keys.CountryId)
+	commandTag, err := c.pool.Exec(ctx, queryUpdate, good.Code, good.Name, keys.UnitOfMeasureId, keys.CountryId)
 	if err != nil {
 		return fmt.Errorf("Good.Update: %w", err)
 	}
@@ -60,11 +56,9 @@ func (c *GoodsRepository) Update(ctx context.Context, good *models.Good, keys *g
 }
 
 func (c *GoodsRepository) Get(ctx context.Context, code uint64) (*models.Good, error) {
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
-	defer cancel()
 	result := models.Good{}
 
-	if err := pgxscan.Get(ctx, c.conn, &result, queryGet, code); err != nil {
+	if err := pgxscan.Get(ctx, c.pool, &result, queryGet, code); err != nil {
 		if pgxscan.NotFound(err) {
 			return nil, storePkg.ErrNotExists
 		}
@@ -74,9 +68,7 @@ func (c *GoodsRepository) Get(ctx context.Context, code uint64) (*models.Good, e
 }
 
 func (c *GoodsRepository) Delete(ctx context.Context, code uint64) error {
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
-	defer cancel()
-	commandTag, err := c.conn.Exec(ctx, queryDelete, code)
+	commandTag, err := c.pool.Exec(ctx, queryDelete, code)
 	if err != nil {
 		return fmt.Errorf("Good.Delete: %w", err)
 	}
@@ -105,21 +97,17 @@ func (c *GoodsRepository) List(ctx context.Context, limit uint64, offset uint64)
 		return nil, err
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
-	defer cancel()
 	var result []*models.Good
-	if err := pgxscan.Select(ctx, c.conn, &result, query, args...); err != nil {
+	if err := pgxscan.Select(ctx, c.pool, &result, query, args...); err != nil {
 		return nil, fmt.Errorf("Good.List:  %w", err)
 	}
 	return result, nil
 }
 
 func (c *GoodsRepository) GetKeys(ctx context.Context, good *models.Good) (*goodPkg.GoodKeys, error) {
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
-	defer cancel()
 	result := goodPkg.GoodKeys{}
 
-	if err := pgxscan.Get(ctx, c.conn, &result, queryGetKeys, good.UnitOfMeasure, good.Country); err != nil {
+	if err := pgxscan.Get(ctx, c.pool, &result, queryGetKeys, good.UnitOfMeasure, good.Country); err != nil {
 		if pgxscan.NotFound(err) {
 			return nil, storePkg.ErrNotExists
 		}

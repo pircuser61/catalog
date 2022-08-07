@@ -25,7 +25,6 @@ func main() {
 	var line string
 	in := bufio.NewScanner(os.Stdin)
 
-	//defer func() { fmt.Println("...press enter"); in.Scan() }()
 _cmd:
 	for {
 		fmt.Print("\n>")
@@ -77,7 +76,9 @@ _cmd:
 
 			response, err := client.GoodList(ctx, &request)
 			if err == nil {
-				fmt.Printf("response: [%v]", response)
+				for _, good := range response.GetGoods() {
+					fmt.Println(good.Code, good.Name)
+				}
 			} else {
 				fmt.Println(err.Error())
 				continue
@@ -216,6 +217,21 @@ _cmd:
 			}
 			country_id := uint32(u64)
 			response, err := client.CountryGet(ctx, &pb.CountryGetRequest{CountryId: country_id})
+			if err == nil {
+				fmt.Printf("response: [%v]", response.Country)
+			} else {
+				fmt.Println(err.Error())
+				continue
+			}
+		case "getCountryName":
+			params := strings.Split(line, " ")
+			if len(params) < 2 {
+				fmt.Printf("invalid args %d items <%v>", len(params), params)
+				continue
+			}
+			params[0] = ""
+			request := strings.Join(params, " ") // для тестов с SQL
+			response, err := client.CountryGetByName(ctx, &pb.CountryByNameRequest{CountryName: request})
 			if err == nil {
 				fmt.Printf("response: [%v]", response.Country)
 			} else {

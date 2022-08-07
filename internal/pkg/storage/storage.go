@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"context"
 	"errors"
 
 	countryPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/country"
@@ -19,9 +18,4 @@ type Core struct {
 	Good          goodPkg.Interface
 	Country       countryPkg.Interface
 	UnitOfMeasure unitOfMeasurePkg.Interface
-}
-
-type Interface interface {
-	GetCore(context.Context) *Core
-	Close(context.Context) error
 }

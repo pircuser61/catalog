@@ -78,6 +78,12 @@ service catalog {
     };
   }
 
+   rpc CountryGetByName(CountryByNameRequest) returns (CountryGetResponse) {
+    option (google.api.http) = {
+      get: "/v1/country/name/{country_name}"
+    };
+  }
+
   /*
     UnitOfMeasure
   */
@@ -233,6 +239,16 @@ message CountryGetResponse {
 message CountryDeleteRequest {
     uint32 country_id = 1;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+// CountryGetByName
+// ---------------------------------------------------------------------------------------------------------------------
+
+message CountryByNameRequest {
+    string country_name = 1;
+}
+
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // UnitOfMeasure

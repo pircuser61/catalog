@@ -1,18 +1,17 @@
 package main
 
-/*
 import (
 	"context"
 	"log"
 
-	botPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/bot"
-	cmdAddPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/bot/command/add"
-	cmdDeletePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/bot/command/delete"
-	cmdGetPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/bot/command/get"
-	cmdHelpPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/bot/command/help"
-	cmdListPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/bot/command/list"
-	cmdUpdatePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/bot/command/update"
 	goodPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good"
+	botPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/tgbot"
+	cmdAddPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/tgbot/command/add"
+	cmdDeletePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/tgbot/command/delete"
+	cmdGetPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/tgbot/command/get"
+	cmdHelpPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/tgbot/command/help"
+	cmdListPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/tgbot/command/list"
+	cmdUpdatePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/tgbot/command/update"
 )
 
 func runBot(ctx context.Context, good goodPkg.Interface) {
@@ -43,4 +42,3 @@ func runBot(ctx context.Context, good goodPkg.Interface) {
 		log.Panic(err)
 	}
 }
-*/

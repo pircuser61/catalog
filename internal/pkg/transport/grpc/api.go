@@ -17,8 +17,7 @@ type Implementation struct {
 	unitOfMeasure                 unitOfMeasurePkg.Interface
 }
 
-func New(ctx context.Context, store storePkg.Interface) pb.CatalogServer {
-	core := store.GetCore(ctx)
+func New(ctx context.Context, core *storePkg.Core) pb.CatalogServer {
 
 	return &Implementation{
 		good:          core.Good,
