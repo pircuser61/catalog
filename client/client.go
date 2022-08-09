@@ -25,7 +25,7 @@ func main() {
 	var line string
 	in := bufio.NewScanner(os.Stdin)
 
-	defer func() { fmt.Println("...press enter"); in.Scan() }()
+_cmd:
 	for {
 		fmt.Print("\n>")
 
@@ -41,9 +41,44 @@ func main() {
 		case "q":
 			return
 		case "list":
-			response, err := client.GoodList(ctx, &emptypb.Empty{})
+			request := pb.GoodListRequest{}
+			params := strings.Split(line, " ")
+			len := len(params)
+			for i := 1; i < len; i += 2 {
+				switch params[i] {
+				case "limit":
+					if i+1 >= len {
+						fmt.Println("<limit> must be a number")
+						continue _cmd
+					}
+					limit, err := strconv.ParseUint(params[i+1], 10, 64)
+					if err != nil {
+						fmt.Println("<limit> must be a number")
+						continue _cmd
+					}
+					request.Limit = limit
+				case "offset":
+					if i+1 >= len {
+						fmt.Println("<offset> must be a number")
+						continue _cmd
+					}
+					offset, err := strconv.ParseUint(params[i+1], 10, 64)
+					if err != nil {
+						fmt.Println("<offset> must be a number")
+						continue _cmd
+					}
+					request.Offset = offset
+				default:
+					fmt.Printf("invalid list param <%s>, avail 'limit <int>', 'offset <int>'", params[i])
+					continue _cmd
+				}
+			}
+
+			response, err := client.GoodList(ctx, &request)
 			if err == nil {
-				fmt.Printf("response: [%v]", response)
+				for _, good := range response.GetGoods() {
+					fmt.Println(good.Code, good.Name)
+				}
 			} else {
 				fmt.Println(err.Error())
 				continue
@@ -116,6 +151,195 @@ func main() {
 				continue
 			}
 			response, err := client.GoodDelete(ctx, &pb.GoodDeleteRequest{Code: code})
+			if err == nil {
+				fmt.Printf("response: [%v]", response)
+			} else {
+				fmt.Println(err.Error())
+				continue
+			}
+
+		case "listCountry":
+			response, err := client.CountryList(ctx, &emptypb.Empty{})
+			if err == nil {
+				fmt.Printf("response: [%v]", response)
+			} else {
+				fmt.Println(err.Error())
+				continue
+			}
+		case "addCountry":
+			params := strings.Split(line, " ")
+			if len(params) != 2 {
+				fmt.Printf("invalid args %d items <%v>", len(params), params)
+				continue
+			}
+			request := pb.CountryCreateRequest{Name: params[1]}
+			response, err := client.CountryCreate(ctx, &request)
+			if err == nil {
+				fmt.Printf("response: [%v]", response)
+			} else {
+				fmt.Println(err.Error())
+				continue
+			}
+		case "updateCountry":
+			params := strings.Split(line, " ")
+			if len(params) != 3 {
+				fmt.Printf("invalid args %d items <%v>", len(params), params)
+				continue
+			}
+			u64, err := strconv.ParseUint(params[1], 10, 32)
+			if err != nil {
+				fmt.Println("<country id> must be a number")
+				continue
+			}
+			country_id := uint32(u64)
+
+			request := pb.CountryUpdateRequest{
+				Country: &pb.Country{
+					CountryId: country_id,
+					Name:      params[2]}}
+			response, err := client.CountryUpdate(ctx, &request)
+			if err == nil {
+				fmt.Printf("response: [%v]", response)
+			} else {
+				fmt.Println(err.Error())
+				continue
+			}
+		case "getCountry":
+			params := strings.Split(line, " ")
+			if len(params) != 2 {
+				fmt.Printf("invalid args %d items <%v>", len(params), params)
+				continue
+			}
+			u64, err := strconv.ParseUint(params[1], 10, 32)
+			if err != nil {
+				fmt.Println("<country id> must be a number")
+				continue
+			}
+			country_id := uint32(u64)
+			response, err := client.CountryGet(ctx, &pb.CountryGetRequest{CountryId: country_id})
+			if err == nil {
+				fmt.Printf("response: [%v]", response.Country)
+			} else {
+				fmt.Println(err.Error())
+				continue
+			}
+		case "getCountryName":
+			params := strings.Split(line, " ")
+			if len(params) < 2 {
+				fmt.Printf("invalid args %d items <%v>", len(params), params)
+				continue
+			}
+			request := params[1]
+			for i, param := range params {
+				if i > 1 {
+					request = request + " " + param
+				} // для тестов с SQL
+			}
+			response, err := client.CountryGetByName(ctx, &pb.CountryByNameRequest{CountryName: request})
+			if err == nil {
+				fmt.Printf("response: [%v]", response.Country)
+			} else {
+				fmt.Println(err.Error())
+				continue
+			}
+		case "deleteCountry":
+			params := strings.Split(line, " ")
+			if len(params) != 2 {
+				fmt.Printf("invalid args %d items <%v>", len(params), params)
+				continue
+			}
+			u64, err := strconv.ParseUint(params[1], 10, 32)
+			if err != nil {
+				fmt.Println("<country id> must be a number")
+				continue
+			}
+			country_id := uint32(u64)
+			response, err := client.CountryDelete(ctx, &pb.CountryDeleteRequest{CountryId: country_id})
+			if err == nil {
+				fmt.Printf("response: [%v]", response)
+			} else {
+				fmt.Println(err.Error())
+				continue
+			}
+
+		case "listUom":
+			response, err := client.UnitOfMeasureList(ctx, &emptypb.Empty{})
+			if err == nil {
+				fmt.Printf("response: [%v]", response)
+			} else {
+				fmt.Println(err.Error())
+				continue
+			}
+		case "addUom":
+			params := strings.Split(line, " ")
+			if len(params) != 2 {
+				fmt.Printf("invalid args %d items <%v>", len(params), params)
+				continue
+			}
+			request := pb.UnitOfMeasureCreateRequest{Name: params[1]}
+			response, err := client.UnitOfMeasureCreate(ctx, &request)
+			if err == nil {
+				fmt.Printf("response: [%v]", response)
+			} else {
+				fmt.Println(err.Error())
+				continue
+			}
+		case "updateUom":
+			params := strings.Split(line, " ")
+			if len(params) != 3 {
+				fmt.Printf("invalid args %d items <%v>", len(params), params)
+				continue
+			}
+			u64, err := strconv.ParseUint(params[1], 10, 32)
+			if err != nil {
+				fmt.Println("<country id> must be a number")
+				continue
+			}
+			unit_of_measure_id := uint32(u64)
+
+			request := pb.UnitOfMeasureUpdateRequest{
+				Unit: &pb.UnitOfMeasure{
+					UnitOfMeasureId: unit_of_measure_id,
+					Name:            params[2]}}
+			response, err := client.UnitOfMeasureUpdate(ctx, &request)
+			if err == nil {
+				fmt.Printf("response: [%v]", response)
+			} else {
+				fmt.Println(err.Error())
+				continue
+			}
+		case "getUom":
+			params := strings.Split(line, " ")
+			if len(params) != 2 {
+				fmt.Printf("invalid args %d items <%v>", len(params), params)
+				continue
+			}
+			u64, err := strconv.ParseUint(params[1], 10, 32)
+			if err != nil {
+				fmt.Println("<country id> must be a number")
+				continue
+			}
+			unit_of_measure_id := uint32(u64)
+			response, err := client.UnitOfMeasureGet(ctx, &pb.UnitOfMeasureGetRequest{UnitOfMeasureId: unit_of_measure_id})
+			if err == nil {
+				fmt.Printf("response: [%v]", response.Unit)
+			} else {
+				fmt.Println(err.Error())
+				continue
+			}
+		case "deleteUom":
+			params := strings.Split(line, " ")
+			if len(params) != 2 {
+				fmt.Printf("invalid args %d items <%v>", len(params), params)
+				continue
+			}
+			u64, err := strconv.ParseUint(params[1], 10, 32)
+			if err != nil {
+				fmt.Println("<country id> must be a number")
+				continue
+			}
+			unit_of_measure_id := uint32(u64)
+			response, err := client.UnitOfMeasureDelete(ctx, &pb.UnitOfMeasureDeleteRequest{UnitOfMeasureId: unit_of_measure_id})
 			if err == nil {
 				fmt.Printf("response: [%v]", response)
 			} else {

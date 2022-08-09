@@ -1,4 +1,8 @@
 /.idea
-/go_build_main_go.exe
+/.vscode
+/.vendor
+api/google
 #.gitignore 
 *exe
+*exe~
+launch.json
