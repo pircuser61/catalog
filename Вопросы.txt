@@ -1,4 +1,0 @@
-Unlock не заблокированного mutex'a вызывает fatal error, который recover не ловит
-recover впринципе не работает с fatal error?
-
-allow_delete_body - а что на счет GET? на allow_get_body ругается

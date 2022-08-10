@@ -34,7 +34,7 @@ func (c *command) Process(ctx context.Context, args string) string {
 	}
 	res := make([]string, len(data))
 	for _, x := range data {
-		res = append(res, x.String())
+		res = append(res, x.Name)
 	}
 	return strings.Join(res, "\n")
 }

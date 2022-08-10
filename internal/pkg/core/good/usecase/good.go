@@ -28,11 +28,6 @@ func New(repository goodPkg.Repository,
 }
 
 func (c *GoodUseCase) Add(ctx context.Context, good *models.Good) error {
-	err := good.Validate()
-	if err != nil {
-		return err
-	}
-
 	keys, err := c.repository.GetKeys(ctx, good)
 	if err != nil {
 		return err
@@ -42,11 +37,6 @@ func (c *GoodUseCase) Add(ctx context.Context, good *models.Good) error {
 }
 
 func (c *GoodUseCase) Update(ctx context.Context, good *models.Good) error {
-	err := good.Validate()
-	if err != nil {
-		return err
-	}
-
 	keys, err := c.repository.GetKeys(ctx, good)
 	if err != nil {
 		return err
