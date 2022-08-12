@@ -4,124 +4,28 @@ package catalog.api;
 
 option go_package = "gitlab.ozon.dev/pircuser61/catalog/api";
 
-import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 
 service catalog {
-  rpc GoodCreate(GoodCreateRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      post: "/v1/good"
-      body: "*"
-    };
-  }
+  rpc GoodCreate(stream GoodCreateRequest) returns (stream GoodCreateResponse) {}
+  rpc GoodGet(stream GoodGetRequest) returns (stream GoodGetResponse) {}
+  rpc GoodList(stream GoodListRequest) returns (stream GoodListResponse) {}
+  rpc GoodUpdate(stream GoodUpdateRequest) returns (stream GoodUpdateResponse) {}
+  rpc GoodDelete(stream GoodDeleteRequest) returns (stream GoodDeleteResponse) {}
 
-  rpc GoodGet(GoodGetRequest) returns (GoodGetResponse) {
-    option (google.api.http) = {
-      get: "/v1/good/{code}"
-    };
-  }
+  rpc CountryCreate(CountryCreateRequest) returns (google.protobuf.Empty) {}
+  rpc CountryGet(CountryGetRequest) returns (CountryGetResponse) {}
+  rpc CountryList(google.protobuf.Empty) returns (CountryListResponse) {}
+  rpc CountryUpdate(CountryUpdateRequest) returns (google.protobuf.Empty) {}
+  rpc CountryDelete(CountryDeleteRequest) returns (google.protobuf.Empty) {}
+  rpc CountryGetByName(CountryByNameRequest) returns (CountryGetResponse) {}
 
-  rpc GoodList(GoodListRequest) returns (GoodListResponse) {
-    option (google.api.http) = {
-      get: "/v1/goods"
-    };
-  }
-
-  rpc GoodUpdate(GoodUpdateRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      put: "/v1/good"
-      body: "*"
-    };
-  }
-
-  rpc GoodDelete(GoodDeleteRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      delete: "/v1/good"
-      body: "*"
-    };
-  }
-
-  /*
-     Country 
-  */
-
-  rpc CountryCreate(CountryCreateRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      post: "/v1/country"
-      body: "*"
-    };
-  }
-
-  rpc CountryGet(CountryGetRequest) returns (CountryGetResponse) {
-    option (google.api.http) = {
-      get: "/v1/country/{country_id}"
-    };
-  }
-
-  rpc CountryList(google.protobuf.Empty) returns (CountryListResponse) {
-    option (google.api.http) = {
-      get: "/v1/countries"
-    };
-  }
-
-  rpc CountryUpdate(CountryUpdateRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      put: "/v1/country"
-      body: "*"
-    };
-  }
-
-  rpc CountryDelete(CountryDeleteRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      delete: "/v1/country"
-      body: "*"
-    };
-  }
-
-   rpc CountryGetByName(CountryByNameRequest) returns (CountryGetResponse) {
-    option (google.api.http) = {
-      get: "/v1/country/name/{country_name}"
-    };
-  }
-
-  /*
-    UnitOfMeasure
-  */
-
-   rpc UnitOfMeasureCreate(UnitOfMeasureCreateRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      post: "/v1/unit_of_measure"
-      body: "*"
-    };
-  }
-
-  rpc UnitOfMeasureGet(UnitOfMeasureGetRequest) returns (UnitOfMeasureGetResponse) {
-    option (google.api.http) = {
-      get: "/v1/unit_of_measure/{unit_of_measure_id}"
-    };
-  }
-
-  rpc UnitOfMeasureList(google.protobuf.Empty) returns (UnitOfMeasureListResponse) {
-    option (google.api.http) = {
-      get: "/v1/unit_of_measures"
-    };
-  }
-
-  rpc UnitOfMeasureUpdate(UnitOfMeasureUpdateRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      put: "/v1/unit_of_measure"
-      body: "*"
-    };
-  }
-
-  rpc UnitOfMeasureDelete(UnitOfMeasureDeleteRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      delete: "/v1/unit_of_measure"
-      body: "*"
-    };
-  }
+  rpc UnitOfMeasureCreate(UnitOfMeasureCreateRequest) returns (google.protobuf.Empty) {}
+  rpc UnitOfMeasureGet(UnitOfMeasureGetRequest) returns (UnitOfMeasureGetResponse) {}
+  rpc UnitOfMeasureList(google.protobuf.Empty) returns (UnitOfMeasureListResponse) {}
+  rpc UnitOfMeasureUpdate(UnitOfMeasureUpdateRequest) returns (google.protobuf.Empty) {}
+  rpc UnitOfMeasureDelete(UnitOfMeasureDeleteRequest) returns (google.protobuf.Empty) {}
 }
-
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Types
@@ -142,7 +46,12 @@ message GoodCreateRequest {
     string name = 1;
     string unit_of_measure = 2;
     string country = 3;
+    optional string error = 4;
 }
+message GoodCreateResponse {
+    optional string error = 1;
+}
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // GoodList
@@ -153,7 +62,8 @@ message GoodListRequest{
 }
 message GoodListResponse {
   repeated Good Goods = 1;
-
+  optional string error = 2;
+  
   message Good {
     uint64 code = 1;
     string name = 2;
@@ -167,6 +77,10 @@ message GoodListResponse {
 message GoodUpdateRequest {
     Good good = 1;
 }
+message GoodUpdateResponse {
+    optional string error = 1;
+}
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // GoodGet
@@ -177,6 +91,7 @@ message GoodGetRequest {
 }
 message GoodGetResponse {
     Good good = 1;
+    optional string error = 4;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -187,6 +102,9 @@ message GoodDeleteRequest {
     uint64 code = 1;
 }
 
+message GoodDeleteResponse {
+    optional string error = 1;
+}
 // ---------------------------------------------------------------------------------------------------------------------
 // Country
 // ---------------------------------------------------------------------------------------------------------------------

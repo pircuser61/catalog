@@ -15,4 +15,4 @@ type Interface interface {
 	List(context.Context, uint64, uint64) ([]*models.Good, error)
 }
 
-var ErrGoodNotFound = errors.New("GoodPkg not found")
+var ErrGoodNotFound = errors.New("Good not found")
