@@ -7,11 +7,11 @@ option go_package = "gitlab.ozon.dev/pircuser61/catalog/api";
 import "google/protobuf/empty.proto";
 
 service catalog {
-  rpc GoodCreate(stream GoodCreateRequest) returns (stream GoodCreateResponse) {}
-  rpc GoodGet(stream GoodGetRequest) returns (stream GoodGetResponse) {}
+  rpc GoodCreate(GoodCreateRequest) returns (GoodCreateResponse) {}
+  rpc GoodGet(GoodGetRequest) returns ( GoodGetResponse) {}
   rpc GoodList(stream GoodListRequest) returns (stream GoodListResponse) {}
-  rpc GoodUpdate(stream GoodUpdateRequest) returns (stream GoodUpdateResponse) {}
-  rpc GoodDelete(stream GoodDeleteRequest) returns (stream GoodDeleteResponse) {}
+  rpc GoodUpdate(GoodUpdateRequest) returns (GoodUpdateResponse) {}
+  rpc GoodDelete(GoodDeleteRequest) returns (GoodDeleteResponse) {}
 
   rpc CountryCreate(CountryCreateRequest) returns (google.protobuf.Empty) {}
   rpc CountryGet(CountryGetRequest) returns (CountryGetResponse) {}
@@ -48,9 +48,8 @@ message GoodCreateRequest {
     string country = 3;
     optional string error = 4;
 }
-message GoodCreateResponse {
-    optional string error = 1;
-}
+
+message GoodCreateResponse {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -60,6 +59,7 @@ message GoodListRequest{
    uint64 limit = 1;
    uint64 offset = 2;
 }
+
 message GoodListResponse {
   repeated Good Goods = 1;
   optional string error = 2;
@@ -77,10 +77,8 @@ message GoodListResponse {
 message GoodUpdateRequest {
     Good good = 1;
 }
-message GoodUpdateResponse {
-    optional string error = 1;
-}
 
+message GoodUpdateResponse {}
 
 // ---------------------------------------------------------------------------------------------------------------------
 // GoodGet
@@ -89,9 +87,9 @@ message GoodUpdateResponse {
 message GoodGetRequest {
     uint64 code = 1;
 }
+
 message GoodGetResponse {
     Good good = 1;
-    optional string error = 4;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -102,9 +100,8 @@ message GoodDeleteRequest {
     uint64 code = 1;
 }
 
-message GoodDeleteResponse {
-    optional string error = 1;
-}
+message GoodDeleteResponse {}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Country
 // ---------------------------------------------------------------------------------------------------------------------
