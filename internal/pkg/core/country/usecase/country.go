@@ -20,18 +20,11 @@ func New(repository countryPkg.Repository) countryPkg.Interface {
 }
 
 func (c *CountryUseCase) Add(ctx context.Context, ct *models.Country) error {
-	if err := ct.Validate(); err != nil {
-		return err
-	}
 	return c.repository.Add(ctx, ct)
 }
 
 func (c *CountryUseCase) Update(ctx context.Context, ct *models.Country) error {
-	err := ct.Validate()
-	if err != nil {
-		return err
-	}
-	err = c.repository.Update(ctx, ct)
+	err := c.repository.Update(ctx, ct)
 	if err != nil && errors.Is(err, storePkg.ErrNotExists) {
 		return countryPkg.ErrCountryNotFound
 	}

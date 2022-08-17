@@ -20,17 +20,10 @@ func New(repository unitOfMeasurePkg.Repository) unitOfMeasurePkg.Interface {
 }
 
 func (c *UnitOfMeasureUseCase) Add(ctx context.Context, uom *models.UnitOfMeasure) error {
-	if err := uom.Validate(); err != nil {
-		return err
-	}
 	return c.repository.Add(ctx, uom)
 }
 func (c *UnitOfMeasureUseCase) Update(ctx context.Context, uom *models.UnitOfMeasure) error {
-	err := uom.Validate()
-	if err != nil {
-		return err
-	}
-	err = c.repository.Update(ctx, uom)
+	err := c.repository.Update(ctx, uom)
 	if err != nil && errors.Is(err, storePkg.ErrNotExists) {
 		return unitOfMeasurePkg.ErrUnitOfMeasurePkgNotFound
 	}

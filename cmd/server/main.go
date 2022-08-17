@@ -53,6 +53,5 @@ func main() {
 	}
 
 	go runBot(ctx, store.Good)
-	go runREST(ctx)
 	runGRPCServer(ctx, store)
 }
