@@ -47,7 +47,7 @@ func main() {
 	rpCountry := countryRepo.New(pool, timeout)
 	rpUnitUfMeasure := unitOfMeasureRepo.New(pool, timeout)
 	store := &storePkg.Core{
-		Good:          goodUseCase.New(rpGood, rpUnitUfMeasure, rpCountry),
+		Good:          goodUseCase.New(rpGood),
 		Country:       countryUseCase.New(rpCountry),
 		UnitOfMeasure: unitOfMeasureUseCase.New(rpUnitUfMeasure),
 	}

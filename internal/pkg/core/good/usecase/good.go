@@ -4,26 +4,18 @@ import (
 	"context"
 
 	"github.com/pkg/errors"
-	countryPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/country"
 	goodPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good"
-	unitOfMeasurePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/unit_of_measure"
 	"gitlab.ozon.dev/pircuser61/catalog/internal/pkg/models"
 	storePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage"
 )
 
 type GoodUseCase struct {
-	repository        goodPkg.Repository
-	uomRepository     unitOfMeasurePkg.Repository
-	countryRepository countryPkg.Repository
+	repository goodPkg.Repository
 }
 
-func New(repository goodPkg.Repository,
-	uomRepository unitOfMeasurePkg.Repository,
-	countryRepository countryPkg.Repository) goodPkg.Interface {
+func New(repository goodPkg.Repository) goodPkg.Interface {
 	return &GoodUseCase{
-		repository:        repository,
-		countryRepository: countryRepository,
-		uomRepository:     uomRepository,
+		repository: repository,
 	}
 }
 
