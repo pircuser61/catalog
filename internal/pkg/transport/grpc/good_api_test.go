@@ -21,7 +21,7 @@ func TestNewGoodService(t *testing.T) {
 		good := goodFxtr.Good().Name("name").UnitOfMeasure("uom").Country("country").P()
 		one := 1
 		id := uint32(1)
-		keys := &goodPkg.GoodKeys{&one, &id, &id}
+		keys := &goodPkg.GoodKeys{TheOne: &one, UnitOfMeasureId: &id, CountryId: &id}
 		goodCreateMsg := pb.GoodCreateRequest{
 			Name:          good.Name,
 			UnitOfMeasure: good.UnitOfMeasure,
