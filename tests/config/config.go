@@ -9,11 +9,11 @@ import (
 const envPrefix = "QA"
 
 type Config struct {
-	Host   string `split_words:"true" default:"localhost:6000"`
-	DbHost string `split_words:"true" default:"localhost"`
-	DbPort string `split_words:"true" default:"5432"`
-	User   string `split_words:"true" default:"test"`
-	Passw  string `split_words:"true" default:"test"`
+	GrpcHost string `split_words:"true" default:"localhost:6000"`
+	DbHost   string `split_words:"true" default:"localhost"`
+	DbPort   string `split_words:"true" default:"5432"`
+	User     string `split_words:"true" default:"test"`
+	Passw    string `split_words:"true" default:"test"`
 }
 
 func FromEnv() (*Config, error) {

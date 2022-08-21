@@ -10,6 +10,7 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgx/v4/pgxpool"
 	_ "github.com/lib/pq"
 	"github.com/pressly/goose/v3"
@@ -21,14 +22,19 @@ type TestDB struct {
 	Pool *pgxpool.Pool
 }
 
-func NewFromEnv() *TestDB {
-	ctx := context.Background()
-	cfg, err := config.FromEnv()
-	if err != nil {
-		panic(err)
-	}
+type UnitOfMeasure struct {
+	Id   uint32
+	Name string
+}
+type Country struct {
+	Id   uint32
+	Name string
+}
 
-	err = makeMigrations(ctx, cfg)
+func NewTestDb(cfg *config.Config) *TestDB {
+	ctx := context.Background()
+
+	err := makeMigrations(ctx, cfg)
 	if err != nil {
 		panic("Make migration error: " + err.Error())
 	}
@@ -70,4 +76,18 @@ func makeMigrations(ctx context.Context, cfg *config.Config) error {
 		return err
 	}
 	return goose.Up(db, "./../migrations/")
+}
+
+func (d *TestDB) GetKeys(ctx context.Context, t *testing.T) (*UnitOfMeasure, *Country) {
+
+	var unit_of_measure UnitOfMeasure
+	var country Country
+
+	if err := pgxscan.Get(ctx, d.Pool, &country, "SELECT country_id as id, name FROM country LIMIT 1"); err != nil {
+		panic("Cant get country id: " + err.Error())
+	}
+	if err := pgxscan.Get(ctx, d.Pool, &unit_of_measure, "SELECT unit_of_measure_id as id, name FROM unit_of_measure LIMIT 1"); err != nil {
+		panic("Cant get uom id: " + err.Error())
+	}
+	return &unit_of_measure, &country
 }

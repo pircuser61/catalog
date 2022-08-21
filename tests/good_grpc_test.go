@@ -11,27 +11,21 @@ import (
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	goodPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good"
-	goodRepo "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/repository/postgre"
-	goodFxtr "gitlab.ozon.dev/pircuser61/catalog/tests/fixtures"
+	pb "gitlab.ozon.dev/pircuser61/catalog/api"
 )
 
-func TestCreateGood(t *testing.T) {
+func TestGoodCreate(t *testing.T) {
 	ctx := context.Background()
 	t.Run("success", func(t *testing.T) {
 		//arrange
 		Db.SetUp(ctx, t)
 		defer Db.TearDown(ctx)
-
 		unit, country := Db.GetKeys(ctx, t)
-		goodKeys := &goodPkg.GoodKeys{UnitOfMeasureId: &unit.Id, CountryId: &country.Id}
-		goodRepo := goodRepo.New(Db.Pool, Timeout)
-		good := goodFxtr.Good().Name("name").P()
+		grpcRequest := &pb.GoodCreateRequest{Name: "Товар1", UnitOfMeasure: unit.Name, Country: country.Name}
+		//act
+		_, err := CatalogClient.GoodCreate(ctx, grpcRequest)
 
-		// act
-		err := goodRepo.Add(ctx, good, goodKeys)
-
-		// assert
+		//assert
 		require.NoError(t, err)
 		type row struct {
 			Name            string
@@ -47,8 +41,8 @@ func TestCreateGood(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, 1, len(result))
 		createdRow := result[0]
-		assert.Equal(t, good.Name, createdRow.Name)
-		assert.Equal(t, *goodKeys.CountryId, createdRow.CountryId)
-		assert.Equal(t, *goodKeys.UnitOfMeasureId, createdRow.UnitOfMeasureId)
+		assert.Equal(t, "Товар1", createdRow.Name)
+		assert.Equal(t, unit.Id, createdRow.UnitOfMeasureId)
+		assert.Equal(t, country.Id, createdRow.CountryId)
 	})
 }
