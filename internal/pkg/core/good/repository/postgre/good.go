@@ -39,13 +39,20 @@ const (
 		" (SELECT unit_of_measure_id FROM unit_of_measure WHERE unit_of_measure.name = $1);"
 )
 
-func (c *GoodsRepository) Add(ctx context.Context, good *models.Good, keys *goodPkg.GoodKeys) error {
-
-	_, err := c.pool.Exec(ctx, queryAdd, good.Name, *keys.UnitOfMeasureId, *keys.CountryId)
+func (c *GoodsRepository) Add(ctx context.Context, good *models.Good) error {
+	keys, err := c.GetKeys(ctx, good)
+	if err != nil {
+		return err
+	}
+	_, err = c.pool.Exec(ctx, queryAdd, good.Name, *keys.UnitOfMeasureId, *keys.CountryId)
 	return err
 }
 
-func (c *GoodsRepository) Update(ctx context.Context, good *models.Good, keys *goodPkg.GoodKeys) error {
+func (c *GoodsRepository) Update(ctx context.Context, good *models.Good) error {
+	keys, err := c.GetKeys(ctx, good)
+	if err != nil {
+		return err
+	}
 	commandTag, err := c.pool.Exec(ctx, queryUpdate, good.Code, good.Name, *keys.UnitOfMeasureId, *keys.CountryId)
 	if err != nil {
 		return fmt.Errorf("Good.Update: %w", err)

@@ -9,11 +9,8 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"gitlab.ozon.dev/pircuser61/catalog/internal/config"
 	countryRepo "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/country/repository/postgre"
-	countryUseCase "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/country/usecase"
 	goodRepo "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/repository/postgre"
-	goodUseCase "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/usecase"
 	unitOfMeasureRepo "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/unit_of_measure/repository/postgre"
-	unitOfMeasureUseCase "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/unit_of_measure/usecase"
 	storePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage"
 )
 
@@ -43,13 +40,10 @@ func main() {
 	}
 	fmt.Println("Connected")
 
-	rpGood := goodRepo.New(pool, timeout)
-	rpCountry := countryRepo.New(pool, timeout)
-	rpUnitUfMeasure := unitOfMeasureRepo.New(pool, timeout)
 	store := &storePkg.Core{
-		Good:          goodUseCase.New(rpGood),
-		Country:       countryUseCase.New(rpCountry),
-		UnitOfMeasure: unitOfMeasureUseCase.New(rpUnitUfMeasure),
+		Good:          goodRepo.New(pool, timeout),
+		Country:       countryRepo.New(pool, timeout),
+		UnitOfMeasure: unitOfMeasureRepo.New(pool, timeout),
 	}
 
 	go runBot(ctx, store.Good)

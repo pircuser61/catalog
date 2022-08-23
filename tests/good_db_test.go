@@ -29,7 +29,7 @@ func TestCreateGood(t *testing.T) {
 		good := goodFxtr.Good().Name("name").P()
 
 		// act
-		err := goodRepo.Add(ctx, good, goodKeys)
+		err := goodRepo.Add(ctx, good)
 
 		// assert
 		require.NoError(t, err)

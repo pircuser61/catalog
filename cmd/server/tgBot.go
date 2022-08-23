@@ -14,9 +14,10 @@ import (
 	cmdUpdatePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/tgbot/command/update"
 )
 
-func runBot(ctx context.Context, good goodPkg.Interface) {
+func runBot(ctx context.Context, good goodPkg.Repository) {
 
 	var bot botPkg.Interface
+
 	{
 		bot = botPkg.MustNew()
 		commandAdd := cmdAddPkg.New(good)

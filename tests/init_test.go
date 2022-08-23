@@ -12,7 +12,6 @@ import (
 	pb "gitlab.ozon.dev/pircuser61/catalog/api"
 
 	goodRepo "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/repository/postgre"
-	goodUseCase "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/usecase"
 	storePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage"
 	grpcApiPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/grpc"
 	config "gitlab.ozon.dev/pircuser61/catalog/tests/config"
@@ -50,7 +49,7 @@ func init() {
 func runTestGRPCServer(ctx context.Context, cfg *config.Config, waitSv chan struct{}) {
 	goodRepo := goodRepo.New(Db.Pool, Timeout)
 	store := &storePkg.Core{
-		Good:          goodUseCase.New(goodRepo),
+		Good:          goodRepo,
 		Country:       nil,
 		UnitOfMeasure: nil,
 	}

@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	pb "gitlab.ozon.dev/pircuser61/catalog/api"
-	countryPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/country"
 	"gitlab.ozon.dev/pircuser61/catalog/internal/pkg/models"
 	storePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage"
 	"google.golang.org/grpc/codes"
@@ -17,13 +16,9 @@ func (i *Implementation) CountryCreate(ctx context.Context, in *pb.CountryCreate
 	if err := i.country.Add(ctx, &models.Country{
 		Name: in.GetName(),
 	}); err != nil {
-		if errors.Is(err, models.ErrValidation) {
-			return nil, status.Error(codes.InvalidArgument, err.Error())
-		}
 		if errors.Is(err, storePkg.ErrTimeout) {
 			return nil, status.Error(codes.DeadlineExceeded, err.Error())
 		}
-
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 	return &emptypb.Empty{}, nil
@@ -38,10 +33,7 @@ func (i *Implementation) CountryUpdate(ctx context.Context, in *pb.CountryUpdate
 		CountryId: inCountry.GetCountryId(),
 		Name:      inCountry.GetName(),
 	}); err != nil {
-		if errors.Is(err, models.ErrValidation) {
-			return nil, status.Error(codes.InvalidArgument, err.Error())
-		}
-		if errors.Is(err, countryPkg.ErrCountryNotFound) {
+		if errors.Is(err, storePkg.ErrNotExists) {
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
 		if errors.Is(err, storePkg.ErrTimeout) {
@@ -55,10 +47,7 @@ func (i *Implementation) CountryUpdate(ctx context.Context, in *pb.CountryUpdate
 
 func (i *Implementation) CountryDelete(ctx context.Context, in *pb.CountryDeleteRequest) (*emptypb.Empty, error) {
 	if err := i.country.Delete(ctx, uint32(in.GetCountryId())); err != nil {
-		if errors.Is(err, models.ErrValidation) {
-			return nil, status.Error(codes.InvalidArgument, err.Error())
-		}
-		if errors.Is(err, countryPkg.ErrCountryNotFound) {
+		if errors.Is(err, storePkg.ErrNotExists) {
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
 		if errors.Is(err, storePkg.ErrTimeout) {
@@ -93,7 +82,7 @@ func (i *Implementation) CountryList(ctx context.Context, _ *emptypb.Empty) (*pb
 func (i *Implementation) CountryGet(ctx context.Context, in *pb.CountryGetRequest) (*pb.CountryGetResponse, error) {
 	country, err := i.country.Get(ctx, in.GetCountryId())
 	if err != nil {
-		if errors.Is(err, countryPkg.ErrCountryNotFound) {
+		if errors.Is(err, storePkg.ErrNotExists) {
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
 		if errors.Is(err, storePkg.ErrTimeout) {
@@ -112,7 +101,7 @@ func (i *Implementation) CountryGet(ctx context.Context, in *pb.CountryGetReques
 func (i *Implementation) CountryGetByName(ctx context.Context, in *pb.CountryByNameRequest) (*pb.CountryGetResponse, error) {
 	country, err := i.country.GetByName(ctx, in.GetCountryName())
 	if err != nil {
-		if errors.Is(err, countryPkg.ErrCountryNotFound) {
+		if errors.Is(err, storePkg.ErrNotExists) {
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
 		if errors.Is(err, storePkg.ErrTimeout) {

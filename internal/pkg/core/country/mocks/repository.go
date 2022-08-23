@@ -9,7 +9,6 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	good "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good"
 	models "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/models"
 )
 
@@ -37,7 +36,7 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 }
 
 // Add mocks base method.
-func (m *MockRepository) Add(arg0 context.Context, arg1 *models.Good) error {
+func (m *MockRepository) Add(arg0 context.Context, arg1 *models.Country) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Add", arg0, arg1)
 	ret0, _ := ret[0].(error)
@@ -51,7 +50,7 @@ func (mr *MockRepositoryMockRecorder) Add(arg0, arg1 interface{}) *gomock.Call {
 }
 
 // Delete mocks base method.
-func (m *MockRepository) Delete(arg0 context.Context, arg1 uint64) error {
+func (m *MockRepository) Delete(arg0 context.Context, arg1 uint32) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", arg0, arg1)
 	ret0, _ := ret[0].(error)
@@ -65,10 +64,10 @@ func (mr *MockRepositoryMockRecorder) Delete(arg0, arg1 interface{}) *gomock.Cal
 }
 
 // Get mocks base method.
-func (m *MockRepository) Get(arg0 context.Context, arg1 uint64) (*models.Good, error) {
+func (m *MockRepository) Get(arg0 context.Context, arg1 uint32) (*models.Country, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", arg0, arg1)
-	ret0, _ := ret[0].(*models.Good)
+	ret0, _ := ret[0].(*models.Country)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -79,38 +78,38 @@ func (mr *MockRepositoryMockRecorder) Get(arg0, arg1 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockRepository)(nil).Get), arg0, arg1)
 }
 
-// GetKeys mocks base method.
-func (m *MockRepository) GetKeys(arg0 context.Context, arg1 *models.Good) (*good.GoodKeys, error) {
+// GetByName mocks base method.
+func (m *MockRepository) GetByName(arg0 context.Context, arg1 string) (*models.Country, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetKeys", arg0, arg1)
-	ret0, _ := ret[0].(*good.GoodKeys)
+	ret := m.ctrl.Call(m, "GetByName", arg0, arg1)
+	ret0, _ := ret[0].(*models.Country)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetKeys indicates an expected call of GetKeys.
-func (mr *MockRepositoryMockRecorder) GetKeys(arg0, arg1 interface{}) *gomock.Call {
+// GetByName indicates an expected call of GetByName.
+func (mr *MockRepositoryMockRecorder) GetByName(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetKeys", reflect.TypeOf((*MockRepository)(nil).GetKeys), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByName", reflect.TypeOf((*MockRepository)(nil).GetByName), arg0, arg1)
 }
 
 // List mocks base method.
-func (m *MockRepository) List(arg0 context.Context, arg1, arg2 uint64) ([]*models.Good, error) {
+func (m *MockRepository) List(arg0 context.Context) ([]*models.Country, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", arg0, arg1, arg2)
-	ret0, _ := ret[0].([]*models.Good)
+	ret := m.ctrl.Call(m, "List", arg0)
+	ret0, _ := ret[0].([]*models.Country)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // List indicates an expected call of List.
-func (mr *MockRepositoryMockRecorder) List(arg0, arg1, arg2 interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) List(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockRepository)(nil).List), arg0, arg1, arg2)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockRepository)(nil).List), arg0)
 }
 
 // Update mocks base method.
-func (m *MockRepository) Update(arg0 context.Context, arg1 *models.Good) error {
+func (m *MockRepository) Update(arg0 context.Context, arg1 *models.Country) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", arg0, arg1)
 	ret0, _ := ret[0].(error)

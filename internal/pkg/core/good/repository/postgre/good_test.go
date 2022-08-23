@@ -20,15 +20,17 @@ func TestCreateGood(t *testing.T) {
 		f := setUp(t)
 		defer f.tearDown()
 		good := goodFxtr.Good().Code(1).Name("Good").P()
-		var unit_of_measure_id, country_id uint32
-		goodKeys := &goodPkg.GoodKeys{UnitOfMeasureId: &unit_of_measure_id, CountryId: &country_id}
 
+		var unit_of_measure_id, country_id uint32
+		/*
+			goodKeys := &goodPkg.GoodKeys{UnitOfMeasureId: &unit_of_measure_id, CountryId: &country_id}
+		*/
 		queryGet := "INSERT INTO good (name, unit_of_measure_id, country_id) VALUES ($1, $2, $3);"
 
 		f.pool.EXPECT().Exec(ctx, queryGet, good.Name, unit_of_measure_id, country_id)
 
 		// act
-		err := f.goodRepo.Add(ctx, good, goodKeys)
+		err := f.goodRepo.Add(ctx, good)
 
 		// assert
 		require.NoError(t, err)
@@ -43,14 +45,14 @@ func TestUpdateGood(t *testing.T) {
 		defer f.tearDown()
 		good := goodFxtr.Good().Code(1).Name("Good").P()
 		var unit_of_measure_id, country_id uint32
-		goodKeys := &goodPkg.GoodKeys{UnitOfMeasureId: &unit_of_measure_id, CountryId: &country_id}
+		//goodKeys := &goodPkg.GoodKeys{UnitOfMeasureId: &unit_of_measure_id, CountryId: &country_id}
 
 		queryUpdate := "UPDATE good SET name  = $2, unit_of_measure_id = $3, country_id = $4 WHERE code = $1;"
 		result := pgxmock.NewResult("", 1)
 		f.pool.EXPECT().Exec(ctx, queryUpdate, good.Code, good.Name, unit_of_measure_id, country_id).Return(result, nil)
 
 		// act
-		err := f.goodRepo.Update(ctx, good, goodKeys)
+		err := f.goodRepo.Update(ctx, good)
 
 		// assert
 		require.NoError(t, err)

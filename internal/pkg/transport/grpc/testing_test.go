@@ -6,44 +6,35 @@ import (
 
 	"github.com/golang/mock/gomock"
 	pb "gitlab.ozon.dev/pircuser61/catalog/api"
+	mockCountryRepo "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/country/mocks"
 	mockGoodRepo "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/mocks"
-	goodUseCase "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/usecase"
+	mockUnitRepo "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/unit_of_measure/mocks"
 	storePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage"
 )
 
-type serviceFixture struct {
-	Ctx                context.Context
-	grpcImplementation pb.CatalogServer
-}
-
-type goodFixture struct {
-	Ctx                context.Context
+type catalogFixture struct {
 	goodRepo           *mockGoodRepo.MockRepository
+	countryRepo        *mockCountryRepo.MockRepository
+	unitRepo           *mockUnitRepo.MockRepository
 	grpcImplementation pb.CatalogServer
 }
 
-/*
-func serviceSetUp(t *testing.T) serviceFixture {
-	t.Parallel()
-	f := serviceFixture{Ctx: context.Background()}
-	f.grpcImplementation = New(f.Ctx, f.core)
-	return f
-}
-*/
-
-func catalogSetUp(t *testing.T) goodFixture {
+func catalogSetUp(ctx context.Context, t *testing.T) catalogFixture {
 	t.Parallel()
 
-	f := goodFixture{}
-	f.Ctx = context.Background()
-	f.goodRepo = mockGoodRepo.NewMockRepository(gomock.NewController(t))
+	f := catalogFixture{}
+	ctrl := gomock.NewController(t)
+
+	f.goodRepo = mockGoodRepo.NewMockRepository(ctrl)
+	f.countryRepo = mockCountryRepo.NewMockRepository(ctrl)
+	f.unitRepo = mockUnitRepo.NewMockRepository(ctrl)
 
 	store := &storePkg.Core{
-		Good:          goodUseCase.New(f.goodRepo),
-		Country:       nil,
-		UnitOfMeasure: nil,
+		Good:          f.goodRepo,
+		Country:       f.countryRepo,
+		UnitOfMeasure: f.unitRepo,
 	}
 
-	f.grpcImplementation = New(f.Ctx, store)
+	f.grpcImplementation = New(ctx, store)
 	return f
 }

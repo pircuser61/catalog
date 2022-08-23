@@ -12,10 +12,10 @@ import (
 )
 
 type command struct {
-	good goodPkg.Interface
+	good goodPkg.Repository
 }
 
-func New(good goodPkg.Interface) commandPkg.Interface {
+func New(good goodPkg.Repository) commandPkg.Interface {
 	return &command{good: good}
 }
 
