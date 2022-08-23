@@ -5,31 +5,32 @@ package tests
 
 import (
 	"context"
-	"fmt"
 	"testing"
+	"time"
 
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	goodPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good"
 	goodRepo "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/repository/postgre"
 	goodFxtr "gitlab.ozon.dev/pircuser61/catalog/tests/fixtures"
 )
 
 func TestCreateGood(t *testing.T) {
 	ctx := context.Background()
-	t.Run("success", func(t *testing.T) {
+	timeout := time.Duration(time.Millisecond * 1000)
+	t.Run("good create success", func(t *testing.T) {
 		//arrange
 		Db.SetUp(ctx, t)
 		defer Db.TearDown(ctx)
 
-		unit, country := Db.GetKeys(ctx, t)
-		goodKeys := &goodPkg.GoodKeys{UnitOfMeasureId: &unit.Id, CountryId: &country.Id}
-		goodRepo := goodRepo.New(Db.Pool, Timeout)
-		good := goodFxtr.Good().Name("name").P()
+		country := Db.GetFirstCountry(ctx, t)
+		unit := Db.GetFirstUnitOfMeasure(ctx, t)
+		good := goodFxtr.Good().Name("name").UnitOfMeasure(unit.Name).Country(country.Name).P()
+
+		goodCore := goodRepo.New(Db.Pool, timeout)
 
 		// act
-		err := goodRepo.Add(ctx, good)
+		err := goodCore.Add(ctx, good)
 
 		// assert
 		require.NoError(t, err)
@@ -41,14 +42,11 @@ func TestCreateGood(t *testing.T) {
 
 		var result []*row
 		err = pgxscan.Select(ctx, Db.Pool, &result, "SELECT name, unit_of_measure_id, country_id FROM good")
-		if err != nil {
-			fmt.Println(err.Error())
-		}
 		require.NoError(t, err)
 		require.Equal(t, 1, len(result))
 		createdRow := result[0]
 		assert.Equal(t, good.Name, createdRow.Name)
-		assert.Equal(t, *goodKeys.CountryId, createdRow.CountryId)
-		assert.Equal(t, *goodKeys.UnitOfMeasureId, createdRow.UnitOfMeasureId)
+		assert.Equal(t, country.Id, createdRow.CountryId)
+		assert.Equal(t, unit.Id, createdRow.UnitOfMeasureId)
 	})
 }

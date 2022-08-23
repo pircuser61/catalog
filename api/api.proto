@@ -18,7 +18,6 @@ service catalog {
   rpc CountryList(google.protobuf.Empty) returns (CountryListResponse) {}
   rpc CountryUpdate(CountryUpdateRequest) returns (google.protobuf.Empty) {}
   rpc CountryDelete(CountryDeleteRequest) returns (google.protobuf.Empty) {}
-  rpc CountryGetByName(CountryByNameRequest) returns (CountryGetResponse) {}
 
   rpc UnitOfMeasureCreate(UnitOfMeasureCreateRequest) returns (google.protobuf.Empty) {}
   rpc UnitOfMeasureGet(UnitOfMeasureGetRequest) returns (UnitOfMeasureGetResponse) {}

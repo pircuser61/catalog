@@ -78,16 +78,18 @@ func makeMigrations(ctx context.Context, cfg *config.Config) error {
 	return goose.Up(db, "./../migrations/")
 }
 
-func (d *TestDB) GetKeys(ctx context.Context, t *testing.T) (*UnitOfMeasure, *Country) {
-
+func (d *TestDB) GetFirstUnitOfMeasure(ctx context.Context, t *testing.T) *UnitOfMeasure {
 	var unit_of_measure UnitOfMeasure
-	var country Country
-
-	if err := pgxscan.Get(ctx, d.Pool, &country, "SELECT country_id as id, name FROM country LIMIT 1"); err != nil {
-		panic("Cant get country id: " + err.Error())
-	}
 	if err := pgxscan.Get(ctx, d.Pool, &unit_of_measure, "SELECT unit_of_measure_id as id, name FROM unit_of_measure LIMIT 1"); err != nil {
 		panic("Cant get uom id: " + err.Error())
 	}
-	return &unit_of_measure, &country
+	return &unit_of_measure
+}
+
+func (d *TestDB) GetFirstCountry(ctx context.Context, t *testing.T) *Country {
+	var country Country
+	if err := pgxscan.Get(ctx, d.Pool, &country, "SELECT country_id as id, name FROM country LIMIT 1"); err != nil {
+		panic("Cant get country id: " + err.Error())
+	}
+	return &country
 }

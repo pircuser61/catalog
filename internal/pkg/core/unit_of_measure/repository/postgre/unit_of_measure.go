@@ -5,19 +5,19 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/driftprogramming/pgxpoolmock"
 	"github.com/georgysavva/scany/pgxscan"
-	"github.com/jackc/pgx/v4/pgxpool"
 	unitOfMeasurePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/unit_of_measure"
 	"gitlab.ozon.dev/pircuser61/catalog/internal/pkg/models"
 	storePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage"
 )
 
 type UnitOfMeasureRepository struct {
-	pool    *pgxpool.Pool
+	pool    pgxpoolmock.PgxPool
 	timeout time.Duration
 }
 
-func New(pgxConnextion *pgxpool.Pool, timeout time.Duration) unitOfMeasurePkg.Repository {
+func New(pgxConnextion pgxpoolmock.PgxPool, timeout time.Duration) unitOfMeasurePkg.Repository {
 	return &UnitOfMeasureRepository{
 		pool:    pgxConnextion,
 		timeout: timeout,
@@ -60,8 +60,12 @@ func (c *UnitOfMeasureRepository) Get(ctx context.Context, code uint32) (*models
 }
 
 func (c *UnitOfMeasureRepository) Update(ctx context.Context, ct *models.UnitOfMeasure) error {
-	if _, err := c.pool.Exec(ctx, queryUpdate, ct.UnitOfMeasureId, ct.Name); err != nil {
+	commandTag, err := c.pool.Exec(ctx, queryUpdate, ct.UnitOfMeasureId, ct.Name)
+	if err != nil {
 		return fmt.Errorf("UnitOfMeasure.Update: %w", err)
+	}
+	if commandTag.RowsAffected() != 1 {
+		return storePkg.ErrNotExists
 	}
 	return nil
 }
@@ -76,15 +80,4 @@ func (c *UnitOfMeasureRepository) Delete(ctx context.Context, code uint32) error
 	}
 
 	return nil
-}
-
-func (c *UnitOfMeasureRepository) GetByName(ctx context.Context, name string) (*models.UnitOfMeasure, error) {
-	result := models.UnitOfMeasure{}
-	if err := pgxscan.Get(ctx, c.pool, &result, queryByName, name); err != nil {
-		if pgxscan.NotFound(err) {
-			return nil, storePkg.ErrNotExists
-		}
-		return nil, fmt.Errorf("UnitOfMeasure.Get: %w", err)
-	}
-	return &result, nil
 }

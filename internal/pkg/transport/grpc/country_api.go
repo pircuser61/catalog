@@ -97,22 +97,3 @@ func (i *Implementation) CountryGet(ctx context.Context, in *pb.CountryGetReques
 			Name:      country.Name},
 	}, nil
 }
-
-func (i *Implementation) CountryGetByName(ctx context.Context, in *pb.CountryByNameRequest) (*pb.CountryGetResponse, error) {
-	country, err := i.country.GetByName(ctx, in.GetCountryName())
-	if err != nil {
-		if errors.Is(err, storePkg.ErrNotExists) {
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-		if errors.Is(err, storePkg.ErrTimeout) {
-			return nil, status.Error(codes.DeadlineExceeded, err.Error())
-		}
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-
-	return &pb.CountryGetResponse{
-		Country: &pb.Country{
-			CountryId: country.CountryId,
-			Name:      country.Name},
-	}, nil
-}

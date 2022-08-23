@@ -14,5 +14,4 @@ type Repository interface {
 	Update(context.Context, *models.Country) error
 	Delete(context.Context, uint32) error
 	List(context.Context) ([]*models.Country, error)
-	GetByName(context.Context, string) (*models.Country, error)
 }
