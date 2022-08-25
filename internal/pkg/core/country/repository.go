@@ -1,3 +1,5 @@
+//go:generate mockgen -source ./repository.go -destination=./mocks/repository.go -package=mock_repository
+
 package country
 
 import (
@@ -12,5 +14,4 @@ type Repository interface {
 	Update(context.Context, *models.Country) error
 	Delete(context.Context, uint32) error
 	List(context.Context) ([]*models.Country, error)
-	GetByName(context.Context, string) (*models.Country, error)
 }

@@ -1,3 +1,5 @@
+//go:generate mockgen -source ./repository.go -destination=./mocks/repository.go -package=mock_repository
+
 package unit_of_measure
 
 import (
@@ -12,5 +14,4 @@ type Repository interface {
 	Update(context.Context, *models.UnitOfMeasure) error
 	Delete(context.Context, uint32) error
 	List(context.Context) ([]*models.UnitOfMeasure, error)
-	GetByName(context.Context, string) (*models.UnitOfMeasure, error)
 }

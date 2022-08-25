@@ -8,14 +8,15 @@ import (
 	"strings"
 
 	goodPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good"
+	storePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage"
 	commandPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/tgbot/command"
 )
 
 type command struct {
-	good goodPkg.Interface
+	good goodPkg.Repository
 }
 
-func New(good goodPkg.Interface) commandPkg.Interface {
+func New(good goodPkg.Repository) commandPkg.Interface {
 	return &command{good: good}
 }
 
@@ -38,7 +39,7 @@ func (c *command) Process(ctx context.Context, args string) string {
 	}
 
 	if err := c.good.Delete(ctx, code); err != nil {
-		if errors.Is(err, goodPkg.ErrGoodNotFound) {
+		if errors.Is(err, storePkg.ErrNotExists) {
 			return "not found"
 		}
 		return "internal error"

@@ -15,7 +15,7 @@ var (
 )
 
 type Core struct {
-	Good          goodPkg.Interface
-	Country       countryPkg.Interface
-	UnitOfMeasure unitOfMeasurePkg.Interface
+	Good          goodPkg.Repository
+	Country       countryPkg.Repository
+	UnitOfMeasure unitOfMeasurePkg.Repository
 }

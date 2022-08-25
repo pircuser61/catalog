@@ -1,3 +1,5 @@
+//go:generate mockgen -source ./repository.go -destination=./mocks/repository.go -package=mock_repository
+
 package good
 
 import (
@@ -13,10 +15,10 @@ type GoodKeys struct {
 }
 
 type Repository interface {
-	Add(context.Context, *models.Good, *GoodKeys) error
+	Add(context.Context, *models.Good) error
 	Get(context.Context, uint64) (*models.Good, error)
-	Update(context.Context, *models.Good, *GoodKeys) error
+	Update(context.Context, *models.Good) error
 	Delete(context.Context, uint64) error
-	GetKeys(context.Context, *models.Good) (*GoodKeys, error)
 	List(context.Context, uint64, uint64) ([]*models.Good, error)
+	GetKeys(context.Context, *models.Good) (*GoodKeys, error)
 }

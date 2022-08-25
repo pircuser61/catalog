@@ -5,19 +5,19 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/driftprogramming/pgxpoolmock"
 	"github.com/georgysavva/scany/pgxscan"
-	"github.com/jackc/pgx/v4/pgxpool"
 	countryPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/country"
 	"gitlab.ozon.dev/pircuser61/catalog/internal/pkg/models"
 	storePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage"
 )
 
 type CountryRepository struct {
-	pool    *pgxpool.Pool
+	pool    pgxpoolmock.PgxPool
 	timeout time.Duration
 }
 
-func New(pgxConnextion *pgxpool.Pool, timeout time.Duration) countryPkg.Repository {
+func New(pgxConnextion pgxpoolmock.PgxPool, timeout time.Duration) countryPkg.Repository {
 	return &CountryRepository{
 		pool:    pgxConnextion,
 		timeout: timeout,
@@ -60,8 +60,12 @@ func (c *CountryRepository) Get(ctx context.Context, code uint32) (*models.Count
 }
 
 func (c *CountryRepository) Update(ctx context.Context, ct *models.Country) error {
-	if _, err := c.pool.Exec(ctx, queryUpdate, ct.CountryId, ct.Name); err != nil {
+	commandTag, err := c.pool.Exec(ctx, queryUpdate, ct.CountryId, ct.Name)
+	if err != nil {
 		return fmt.Errorf("Country.Update: %w", err)
+	}
+	if commandTag.RowsAffected() != 1 {
+		return storePkg.ErrNotExists
 	}
 	return nil
 }
@@ -75,27 +79,4 @@ func (c *CountryRepository) Delete(ctx context.Context, code uint32) error {
 		return storePkg.ErrNotExists
 	}
 	return nil
-}
-
-// Метод для тестов
-func (c *CountryRepository) GetByName(ctx context.Context, name string) (*models.Country, error) {
-	result := models.Country{}
-	//  тест таймаута
-	/*
-		slowRequest := "SET statement_timeout = 1000;SELECT pg_sleep (2);"
-		_, err := c.pool.Exec(ctx, slowRequest)
-		if err != nil {
-			return nil, err
-		}
-	*/
-
-	fmt.Printf("\n[%s]", name) // для тестов с внедрением SQL
-	if err := pgxscan.Get(ctx, c.pool, &result, queryByName, name); err != nil {
-
-		if pgxscan.NotFound(err) {
-			return nil, storePkg.ErrNotExists
-		}
-		return nil, fmt.Errorf("Country.Get: %w", err)
-	}
-	return &result, nil
 }

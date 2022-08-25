@@ -6,7 +6,7 @@ import (
 	"io"
 
 	pb "gitlab.ozon.dev/pircuser61/catalog/api"
-	goodPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good"
+	"gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good"
 	"gitlab.ozon.dev/pircuser61/catalog/internal/pkg/models"
 	storePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage"
 	"google.golang.org/grpc/codes"
@@ -33,7 +33,8 @@ func (i *Implementation) GoodCreate(ctx context.Context, in *pb.GoodCreateReques
 func (i *Implementation) GoodGet(ctx context.Context, in *pb.GoodGetRequest) (*pb.GoodGetResponse, error) {
 	good, err := i.good.Get(ctx, in.GetCode())
 	if err != nil {
-		if errors.Is(err, goodPkg.ErrGoodNotFound) {
+
+		if errors.Is(err, storePkg.ErrNotExists) {
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
 		if errors.Is(err, storePkg.ErrTimeout) {
@@ -65,7 +66,7 @@ func (i *Implementation) GoodUpdate(ctx context.Context, in *pb.GoodUpdateReques
 		if errors.Is(err, models.ErrValidation) {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
-		if errors.Is(err, goodPkg.ErrGoodNotFound) {
+		if errors.Is(err, storePkg.ErrNotExists) {
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
 		if errors.Is(err, storePkg.ErrTimeout) {
@@ -79,10 +80,7 @@ func (i *Implementation) GoodUpdate(ctx context.Context, in *pb.GoodUpdateReques
 
 func (i *Implementation) GoodDelete(ctx context.Context, in *pb.GoodDeleteRequest) (*pb.GoodDeleteResponse, error) {
 	if err := i.good.Delete(ctx, in.GetCode()); err != nil {
-		if errors.Is(err, models.ErrValidation) {
-			return nil, status.Error(codes.InvalidArgument, err.Error())
-		}
-		if errors.Is(err, goodPkg.ErrGoodNotFound) {
+		if errors.Is(err, storePkg.ErrNotExists) {
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
 		if errors.Is(err, storePkg.ErrTimeout) {
@@ -104,30 +102,36 @@ func (i *Implementation) GoodList(stream pb.Catalog_GoodListServer) error {
 		if err != nil {
 			return err
 		}
-		result := &pb.GoodListResponse{}
-		ctx := context.Background()
-		goods, err := i.good.List(ctx, in.GetLimit(), in.GetOffset())
-		if err != nil {
-			if errors.Is(err, storePkg.ErrTimeout) {
-				err = status.Error(codes.DeadlineExceeded, err.Error())
-			} else {
-				err = status.Error(codes.Internal, err.Error())
-			}
-			errMsg := err.Error()
-			result.Error = &errMsg
-		} else {
-			listGoods := make([]*pb.GoodListResponse_Good, 0, len(goods))
-			for _, good := range goods {
-				listGoods = append(listGoods, &pb.GoodListResponse_Good{
-					Code: good.Code,
-					Name: good.Name,
-				})
-			}
-			result.Goods = listGoods
-		}
+
+		result := getGoodList(i.good, in.GetLimit(), in.GetOffset())
 
 		if err := stream.Send(result); err != nil {
 			return err
 		}
 	}
+}
+
+func getGoodList(goodRepo good.Repository, limit, offset uint64) *pb.GoodListResponse {
+	result := &pb.GoodListResponse{}
+	ctx := context.Background()
+	goods, err := goodRepo.List(ctx, limit, offset)
+	if err != nil {
+		if errors.Is(err, storePkg.ErrTimeout) {
+			err = status.Error(codes.DeadlineExceeded, err.Error())
+		} else {
+			err = status.Error(codes.Internal, err.Error())
+		}
+		errMsg := err.Error()
+		result.Error = &errMsg
+	} else {
+		listGoods := make([]*pb.GoodListResponse_Good, 0, len(goods))
+		for _, good := range goods {
+			listGoods = append(listGoods, &pb.GoodListResponse_Good{
+				Code: good.Code,
+				Name: good.Name,
+			})
+		}
+		result.Goods = listGoods
+	}
+	return result
 }

@@ -12,13 +12,12 @@ import (
 
 type Implementation struct {
 	pb.UnimplementedCatalogServer //	mustEmbedUnimplementedCatalogServer()
-	good                          goodPkg.Interface
-	country                       countryPkg.Interface
-	unitOfMeasure                 unitOfMeasurePkg.Interface
+	good                          goodPkg.Repository
+	country                       countryPkg.Repository
+	unitOfMeasure                 unitOfMeasurePkg.Repository
 }
 
 func New(ctx context.Context, core *storePkg.Core) pb.CatalogServer {
-
 	return &Implementation{
 		good:          core.Good,
 		country:       core.Country,
