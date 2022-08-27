@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"expvar"
 	"fmt"
 	"time"
 
@@ -11,6 +12,8 @@ import (
 	storePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage"
 	pkgCatalogConsumer "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/grpc_kafka"
 )
+
+var counterIn, counterSuccess, counterErr expvar.Int
 
 type Consumer struct {
 	catalog  *pkgCatalogConsumer.CatalogConsumer
@@ -39,15 +42,18 @@ func (c *Consumer) ConsumeClaim(session sarama.ConsumerGroupSession, claim saram
 			}
 			log.Msgf("partition: %v\n, topic: %v\n data: %v", msg.Partition, msg.Topic, string(msg.Value))
 			session.MarkMessage(msg, "")
+			counterIn.Add(1)
 			err := c.catalog.Handle(ctx, msg)
 			if err != nil {
+				counterErr.Add(1)
 				log.ErrorMsg(err.Error())
 				(*c.producer).Input() <- &sarama.ProducerMessage{
 					Topic: config.Topic_error,
 					Key:   sarama.StringEncoder(fmt.Sprint(time.Now())),
 					Value: sarama.ByteEncoder([]byte(err.Error())),
 				}
-
+			} else {
+				counterSuccess.Add(1)
 			}
 		}
 	}

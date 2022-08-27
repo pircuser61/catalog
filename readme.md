@@ -1,5 +1,7 @@
 Каталог с товарами
 
+Счетчики для сервиса базы данных http://127.0.0.1:8087/debug/vars
+
 curl -X POST localhost:8080/v1/good -d '{"name":"name1", "unit_of_measure":"uom1", "country":"Country1"}'  
 curl localhost:8080/v1/goods
 curl localhost:8080/v1/good/1

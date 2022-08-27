@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
+	_ "expvar"
 	"net"
+	_ "net/http/pprof"
 
 	pb "gitlab.ozon.dev/pircuser61/catalog/api"
-	grpcApiPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/grpc"
-
 	config "gitlab.ozon.dev/pircuser61/catalog/config"
 	storePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage"
+	grpcApiPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/grpc"
 	"google.golang.org/grpc"
 )
 

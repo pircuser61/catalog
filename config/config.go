@@ -8,6 +8,7 @@ import (
 
 const (
 	GrpcAddr = ":8082"
+	HttpAddr = "localhost:8087"
 
 	Topic_create = "good_create"
 	Topic_update = "good_update"

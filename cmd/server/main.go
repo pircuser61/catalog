@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"database/sql"
+	"expvar"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/jackc/pgx/v4"
@@ -56,6 +58,7 @@ func main() {
 
 	go runBot(ctx, store.Good)
 	go runKafkaConsumer(ctx, store)
+	go runHttp(ctx)
 	runGRPCServer(ctx, store)
 }
 
@@ -67,4 +70,19 @@ func makeMigrations(ctx context.Context) error {
 	}
 	defer db.Close()
 	return goose.Up(db, "./../../migrations/")
+}
+
+func runHttp(ctx context.Context) {
+
+	counterIn.Set(0)
+	counterSuccess.Set(0)
+	counterErr.Set(0)
+
+	expvar.Publish("Total", &counterIn)
+	expvar.Publish("Success", &counterSuccess)
+	expvar.Publish("Errors", &counterErr)
+
+	if err := http.ListenAndServe(config.HttpAddr, nil); err != nil {
+		panic(err)
+	}
 }
