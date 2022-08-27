@@ -7,16 +7,13 @@ import (
 	pb "gitlab.ozon.dev/pircuser61/catalog/api"
 	grpcApiPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/grpc"
 
+	config "gitlab.ozon.dev/pircuser61/catalog/config"
 	storePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage"
 	"google.golang.org/grpc"
 )
 
-const (
-	grcpAddr = ":8082"
-)
-
 func runGRPCServer(ctx context.Context, store *storePkg.Core) {
-	listener, err := net.Listen("tcp", grcpAddr)
+	listener, err := net.Listen("tcp", config.GrpcAddr)
 	if err != nil {
 		panic(err)
 	}

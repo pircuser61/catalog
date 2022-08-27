@@ -1,0 +1,95 @@
+version: '2'
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: "${POSTGRES_DB:-postgres}"
+      POSTGRES_USER: "${POSTGRES_USER:-user}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-1234}"
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432" 
+
+  postgres_test:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: "postgres_test"
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "1234"
+    ports:
+      - "5434:5432" 
+  
+  zk1:
+    image: confluentinc/cp-zookeeper:5.4.3
+    ports:
+      - "22181:22181"
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 22181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zk1:22888:23888
+
+  kafka-1:
+    image: confluentinc/cp-kafka:5.4.3
+    ports:
+      - "19092:19092"
+      - "19091:19091"
+    depends_on:
+      - zk1
+    environment:
+      KAFKA_CLUSTER_ID: test-kafka-cluster
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zk1:22181
+      KAFKA_LISTENERS: LISTENER_INTERNAL://kafka-1:19092,LISTENER_EXTERNAL://kafka-1:19091
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_INTERNAL://kafka-1:19092,LISTENER_EXTERNAL://localhost:19091
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_INTERNAL:PLAINTEXT,LISTENER_EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_INTERNAL
+
+  kafka-2:
+    image: confluentinc/cp-kafka:5.4.3
+    ports:
+      - "29092:29092"
+      - "29091:29091"
+    depends_on:
+      - zk1
+    environment:
+      KAFKA_CLUSTER_ID: test-kafka-cluster
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zk1:22181
+      KAFKA_LISTENERS: LISTENER_INTERNAL://kafka-2:19092,LISTENER_EXTERNAL://kafka-2:29091
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_INTERNAL://kafka-2:19092,LISTENER_EXTERNAL://localhost:29091
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_INTERNAL:PLAINTEXT,LISTENER_EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_INTERNAL
+
+  kafka-3:
+    image: confluentinc/cp-kafka:5.4.3
+    ports:
+      - "39092:39092"
+      - "39091:39091"
+    depends_on:
+      - zk1
+    environment:
+      KAFKA_CLUSTER_ID: test-kafka-cluster
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zk1:22181
+      KAFKA_LISTENERS: LISTENER_INTERNAL://kafka-3:19092,LISTENER_EXTERNAL://kafka-3:39091
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_INTERNAL://kafka-3:19092,LISTENER_EXTERNAL://localhost:39091
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_INTERNAL:PLAINTEXT,LISTENER_EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_INTERNAL
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    ports:
+      - "8086:8080"
+    restart: "no"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: test-kafka-cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-1:19092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zk1:22181
+#      KAFKA_CLUSTERS_0_READONLY: true
