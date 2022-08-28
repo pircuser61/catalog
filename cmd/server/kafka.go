@@ -2,18 +2,16 @@ package main
 
 import (
 	"context"
-	"expvar"
 	"fmt"
 	"time"
 
 	"github.com/Shopify/sarama"
 	config "gitlab.ozon.dev/pircuser61/catalog/config"
+	counters "gitlab.ozon.dev/pircuser61/catalog/internal/counters"
 	log "gitlab.ozon.dev/pircuser61/catalog/internal/log"
 	storePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage"
 	pkgCatalogConsumer "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/grpc_kafka"
 )
-
-var counterIn, counterSuccess, counterErr expvar.Int
 
 type Consumer struct {
 	catalog  *pkgCatalogConsumer.CatalogConsumer
@@ -34,6 +32,7 @@ func (c *Consumer) ConsumeClaim(session sarama.ConsumerGroupSession, claim saram
 		select {
 		case <-session.Context().Done():
 			log.Msg("Done")
+			time.Sleep(time.Second * 10)
 			return nil
 		case msg, ok := <-claim.Messages():
 			if !ok {
@@ -42,10 +41,10 @@ func (c *Consumer) ConsumeClaim(session sarama.ConsumerGroupSession, claim saram
 			}
 			log.Msgf("partition: %v\n, topic: %v\n data: %v", msg.Partition, msg.Topic, string(msg.Value))
 			session.MarkMessage(msg, "")
-			counterIn.Add(1)
+			counters.Request()
 			err := c.catalog.Handle(ctx, msg)
 			if err != nil {
-				counterErr.Add(1)
+				counters.Error()
 				log.ErrorMsg(err.Error())
 				(*c.producer).Input() <- &sarama.ProducerMessage{
 					Topic: config.Topic_error,
@@ -53,7 +52,7 @@ func (c *Consumer) ConsumeClaim(session sarama.ConsumerGroupSession, claim saram
 					Value: sarama.ByteEncoder([]byte(err.Error())),
 				}
 			} else {
-				counterSuccess.Add(1)
+				counters.Success()
 			}
 		}
 	}

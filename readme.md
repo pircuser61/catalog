@@ -1,6 +1,8 @@
 Каталог с товарами
 
 Счетчики для сервиса базы данных http://127.0.0.1:8087/debug/vars
+Jaeger http://localhost:16686
+docker-comoose - для jaeger в gitlab.ozon.dev/pircuser61/catalog_iface
 
 curl -X POST localhost:8080/v1/good -d '{"name":"name1", "unit_of_measure":"uom1", "country":"Country1"}'  
 curl localhost:8080/v1/goods

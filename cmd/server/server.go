@@ -6,8 +6,12 @@ import (
 	"net"
 	_ "net/http/pprof"
 
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	otgrpc "github.com/opentracing-contrib/go-grpc"
+	"github.com/opentracing/opentracing-go"
 	pb "gitlab.ozon.dev/pircuser61/catalog/api"
 	config "gitlab.ozon.dev/pircuser61/catalog/config"
+	counters "gitlab.ozon.dev/pircuser61/catalog/internal/counters"
 	storePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage"
 	grpcApiPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/grpc"
 	"google.golang.org/grpc"
@@ -18,10 +22,41 @@ func runGRPCServer(ctx context.Context, store *storePkg.Core) {
 	if err != nil {
 		panic(err)
 	}
-	grpcServer := grpc.NewServer()
+
+	interceptors := grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+		otgrpc.OpenTracingServerInterceptor(opentracing.GlobalTracer()),
+		traceInterceptor, counterInterceptor))
+
+	grpcServer := grpc.NewServer(interceptors)
 	pb.RegisterCatalogServer(grpcServer, grpcApiPkg.New(ctx, store))
 
 	if err = grpcServer.Serve(listener); err != nil {
 		panic(err)
 	}
+}
+
+func traceInterceptor(ctx context.Context,
+	req interface{},
+	info *grpc.UnaryServerInfo,
+	handler grpc.UnaryHandler) (resp interface{}, err error) {
+
+	mname := info.FullMethod
+	span, ctx := opentracing.StartSpanFromContext(ctx, "db/"+mname)
+	defer span.Finish()
+
+	return handler(ctx, req)
+}
+
+func counterInterceptor(ctx context.Context,
+	req interface{},
+	info *grpc.UnaryServerInfo,
+	handler grpc.UnaryHandler) (resp interface{}, err error) {
+	counters.Request()
+	result, err := handler(ctx, req)
+	if err == nil {
+		counters.Success()
+	} else {
+		counters.Error()
+	}
+	return result, err
 }

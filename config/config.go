@@ -14,6 +14,8 @@ const (
 	Topic_update = "good_update"
 	Topic_delete = "good_delete"
 	Topic_error  = "errors"
+
+	JaegerHostPort = "localhost:6831"
 )
 
 var (

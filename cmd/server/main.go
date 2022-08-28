@@ -5,14 +5,19 @@ import (
 	"database/sql"
 	"expvar"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	_ "github.com/lib/pq"
+	"github.com/opentracing/opentracing-go"
 	"github.com/pressly/goose/v3"
+	"github.com/uber/jaeger-client-go"
+	jaegerConfig "github.com/uber/jaeger-client-go/config"
 	"gitlab.ozon.dev/pircuser61/catalog/config"
+	counters "gitlab.ozon.dev/pircuser61/catalog/internal/counters"
 	countryRepo "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/country/repository/postgre"
 	goodRepo "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/repository/postgre"
 	unitOfMeasureRepo "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/unit_of_measure/repository/postgre"
@@ -28,7 +33,14 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err := makeMigrations(ctx)
+	tracer, closer, err := createTracer()
+	if err != nil {
+		panic(err.Error())
+	}
+	defer closer.Close()
+	opentracing.SetGlobalTracer(tracer)
+
+	err = makeMigrations(ctx)
 	if err != nil {
 		panic("Make migration error: " + err.Error())
 	}
@@ -74,15 +86,33 @@ func makeMigrations(ctx context.Context) error {
 
 func runHttp(ctx context.Context) {
 
-	counterIn.Set(0)
-	counterSuccess.Set(0)
-	counterErr.Set(0)
+	counters.Init()
 
-	expvar.Publish("Total", &counterIn)
-	expvar.Publish("Success", &counterSuccess)
-	expvar.Publish("Errors", &counterErr)
+	expvar.Publish("Total", &counters.RequestCount)
+	expvar.Publish("Success", &counters.SuccessCount)
+	expvar.Publish("Errors", &counters.ErrorCount)
 
 	if err := http.ListenAndServe(config.HttpAddr, nil); err != nil {
 		panic(err)
 	}
+}
+
+func createTracer() (opentracing.Tracer, io.Closer, error) {
+	rc := &jaegerConfig.ReporterConfig{
+		LocalAgentHostPort: config.JaegerHostPort,
+		LogSpans:           true,
+	}
+
+	sc := &jaegerConfig.SamplerConfig{
+		Type:  "const",
+		Param: 1,
+	}
+
+	cfg := jaegerConfig.Configuration{
+		ServiceName: "catalog",
+		Disabled:    false,
+		Reporter:    rc,
+		Sampler:     sc,
+	}
+	return cfg.NewTracer(jaegerConfig.Logger(jaeger.StdLogger))
 }
