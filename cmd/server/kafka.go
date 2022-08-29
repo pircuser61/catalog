@@ -8,9 +8,10 @@ import (
 	"github.com/Shopify/sarama"
 	config "gitlab.ozon.dev/pircuser61/catalog/config"
 	counters "gitlab.ozon.dev/pircuser61/catalog/internal/counters"
-	log "gitlab.ozon.dev/pircuser61/catalog/internal/log"
+	logger "gitlab.ozon.dev/pircuser61/catalog/internal/logger"
 	storePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage"
 	pkgCatalogConsumer "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/grpc_kafka"
+	"go.uber.org/zap"
 )
 
 type Consumer struct {
@@ -27,25 +28,29 @@ func (c *Consumer) Cleanup(session sarama.ConsumerGroupSession) error {
 }
 
 func (c *Consumer) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
+	defer logger.Sync()
 	ctx := context.Background()
 	for {
 		select {
 		case <-session.Context().Done():
-			log.Msg("Done")
+			logger.Debug("Kafka context channel closed")
 			time.Sleep(time.Second * 10)
 			return nil
 		case msg, ok := <-claim.Messages():
 			if !ok {
-				log.Msg("Data channel closed")
+				logger.Debug("Kafka message channel closed ")
 				return nil
 			}
-			log.Msgf("partition: %v\n, topic: %v\n data: %v", msg.Partition, msg.Topic, string(msg.Value))
+			logger.Debug("Kaffka new message",
+				zap.Int32("partition", msg.Partition),
+				zap.String("topic", msg.Topic),
+				zap.ByteString("value", msg.Value))
 			session.MarkMessage(msg, "")
 			counters.Request()
 			err := c.catalog.Handle(ctx, msg)
 			if err != nil {
 				counters.Error()
-				log.ErrorMsg(err.Error())
+				logger.Error("Kafka response error", zap.Error(err))
 				(*c.producer).Input() <- &sarama.ProducerMessage{
 					Topic: config.Topic_error,
 					Key:   sarama.StringEncoder(fmt.Sprint(time.Now())),
@@ -60,6 +65,7 @@ func (c *Consumer) ConsumeClaim(session sarama.ConsumerGroupSession, claim saram
 
 func runKafkaConsumer(ctx context.Context, core *storePkg.Core) {
 	var topics = []string{config.Topic_create, config.Topic_update, config.Topic_delete}
+	defer logger.Sync()
 
 	cfg := sarama.NewConfig()
 	asyncProducer, err := sarama.NewAsyncProducer(config.KafkaBrokers, cfg)
@@ -72,8 +78,7 @@ func runKafkaConsumer(ctx context.Context, core *storePkg.Core) {
 
 	client, err := sarama.NewConsumerGroup(config.KafkaBrokers, "catalog", kafkaCfg)
 	if err != nil {
-		log.Msgf("ERR on create kafka client: %v", err)
-		return
+		logger.Panic("Kafka can't craete consumer: " + err.Error())
 	}
 
 	consumer := &Consumer{
@@ -81,10 +86,10 @@ func runKafkaConsumer(ctx context.Context, core *storePkg.Core) {
 		producer: &asyncProducer,
 	}
 	for {
-		log.Msg("Consumer starts...")
+		logger.Debug("Consumer starts...")
 		err := client.Consume(ctx, topics, consumer)
 		if err != nil {
-			log.Msgf("ERR on consume: %v", err)
+			logger.Error("Kaffka error on consume", zap.Error(err))
 			time.Sleep(time.Second * 10)
 		}
 	}

@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"expvar"
-	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -14,14 +13,15 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/opentracing/opentracing-go"
 	"github.com/pressly/goose/v3"
-	"github.com/uber/jaeger-client-go"
 	jaegerConfig "github.com/uber/jaeger-client-go/config"
 	"gitlab.ozon.dev/pircuser61/catalog/config"
 	counters "gitlab.ozon.dev/pircuser61/catalog/internal/counters"
+	logger "gitlab.ozon.dev/pircuser61/catalog/internal/logger"
 	countryRepo "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/country/repository/postgre"
 	goodRepo "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/repository/postgre"
 	unitOfMeasureRepo "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/unit_of_measure/repository/postgre"
 	storePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage"
+	"go.uber.org/zap"
 )
 
 type DB struct {
@@ -32,42 +32,43 @@ type DB struct {
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+	defer logger.Sync()
 
 	tracer, closer, err := createTracer()
 	if err != nil {
-		panic(err.Error())
+		logger.Panic("Create tracer error:" + err.Error())
 	}
 	defer closer.Close()
+
+	// NewLoggingTracer creates a new tracer that logs all span interactions
 	opentracing.SetGlobalTracer(tracer)
 
 	err = makeMigrations(ctx)
 	if err != nil {
-		panic("Make migration error: " + err.Error())
+		logger.Panic("Make migration error:" + err.Error())
 	}
 
 	timeout := time.Duration(time.Millisecond * 1000)
+	logger.Debug("DB connect")
 	psqlConn := config.GetConnectionString()
-
 	pool, err := pgxpool.Connect(ctx, psqlConn)
 	if err != nil {
-		panic("Unable to connect to database: %v\n" + err.Error())
+		logger.Panic("Unable to connect to database", zap.Error(err))
 	}
 	defer func() {
-		fmt.Println("Disconnected")
 		pool.Close()
 	}()
 
 	if err := pool.Ping(ctx); err != nil {
-		panic(err)
+		logger.Panic("Db ping", zap.Error(err))
 	}
-	fmt.Println("DB connected")
 
 	store := &storePkg.Core{
 		Good:          goodRepo.New(pool, timeout),
 		Country:       countryRepo.New(pool, timeout),
 		UnitOfMeasure: unitOfMeasureRepo.New(pool, timeout),
 	}
-
+	logger.Debug("Runing services")
 	go runBot(ctx, store.Good)
 	go runKafkaConsumer(ctx, store)
 	go runHttp(ctx)
@@ -75,7 +76,8 @@ func main() {
 }
 
 func makeMigrations(ctx context.Context) error {
-	fmt.Println("Make migrations")
+	defer logger.Sync()
+	logger.Debug("Make migreations")
 	db, err := sql.Open("postgres", config.GetConnectionString())
 	if err != nil {
 		return err
@@ -85,22 +87,24 @@ func makeMigrations(ctx context.Context) error {
 }
 
 func runHttp(ctx context.Context) {
-
+	defer logger.Sync()
+	logger.Debug("Run http server")
 	counters.Init()
-
 	expvar.Publish("Total", &counters.RequestCount)
 	expvar.Publish("Success", &counters.SuccessCount)
 	expvar.Publish("Errors", &counters.ErrorCount)
 
 	if err := http.ListenAndServe(config.HttpAddr, nil); err != nil {
-		panic(err)
+		logger.Panic("Http listen", zap.Error(err))
 	}
 }
 
 func createTracer() (opentracing.Tracer, io.Closer, error) {
+	defer logger.Sync()
+	logger.Debug("Create tracer")
 	rc := &jaegerConfig.ReporterConfig{
 		LocalAgentHostPort: config.JaegerHostPort,
-		LogSpans:           true,
+		LogSpans:           false,
 	}
 
 	sc := &jaegerConfig.SamplerConfig{
@@ -114,5 +118,5 @@ func createTracer() (opentracing.Tracer, io.Closer, error) {
 		Reporter:    rc,
 		Sampler:     sc,
 	}
-	return cfg.NewTracer(jaegerConfig.Logger(jaeger.StdLogger))
+	return cfg.NewTracer(jaegerConfig.Logger(&logger.JgLogger))
 }

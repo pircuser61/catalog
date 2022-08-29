@@ -3,13 +3,13 @@ package commander
 import (
 	"context"
 	"fmt"
-	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/pkg/errors"
-
 	configPkg "gitlab.ozon.dev/pircuser61/catalog/config"
+	logger "gitlab.ozon.dev/pircuser61/catalog/internal/logger"
 	commandPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/tgbot/command"
+	"go.uber.org/zap"
 )
 
 var UnknownCommand = errors.New("Unknown command, /help for help")
@@ -28,12 +28,12 @@ type Interface interface {
 func MustNew() Interface {
 	cfg, err := configPkg.GetTgBotConfig()
 	if err != nil {
-		log.Panic(errors.Wrap(err, "Init tgbot config"))
+		logger.Panic("Init tgbot config", zap.Error(err))
 	}
 
 	bot, err := tgbotapi.NewBotAPI(cfg.ApiKey)
 	if err != nil {
-		log.Panic(errors.Wrap(err, "Init tgbot"))
+		logger.Panic("Init tgbot", zap.Error(err))
 	}
 	bot.Debug = cfg.Debug
 	return &commander{bot, make(map[string]commandPkg.Interface)}

@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"log"
 
+	logger "gitlab.ozon.dev/pircuser61/catalog/internal/logger"
 	goodPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good"
 	botPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/tgbot"
 	cmdAddPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/tgbot/command/add"
@@ -12,6 +12,7 @@ import (
 	cmdHelpPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/tgbot/command/help"
 	cmdListPkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/tgbot/command/list"
 	cmdUpdatePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/transport/tgbot/command/update"
+	"go.uber.org/zap"
 )
 
 func runBot(ctx context.Context, good goodPkg.Repository) {
@@ -40,6 +41,6 @@ func runBot(ctx context.Context, good goodPkg.Repository) {
 	}
 
 	if err := bot.Run(ctx); err != nil {
-		log.Panic(err)
+		logger.Panic("bot.Run", zap.Error(err))
 	}
 }

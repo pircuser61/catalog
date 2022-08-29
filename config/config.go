@@ -4,6 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"os"
+
+	logger "gitlab.ozon.dev/pircuser61/catalog/internal/logger"
+	"go.uber.org/zap"
 )
 
 const (
@@ -57,9 +60,10 @@ func GetPostgresConfig() *PostgreConfig {
 }
 
 func getEnv(name, defaultValue string) string {
+	defer logger.Sync()
 	key, ok := os.LookupEnv(name)
 	if !ok || key == "" {
-		fmt.Printf("%s not set, using default value.\n", name)
+		logger.Info("Env not set, using default value", zap.String("env", name))
 		return defaultValue
 	}
 	return key
