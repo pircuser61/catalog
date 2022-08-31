@@ -14,6 +14,7 @@ import (
 )
 
 func (i *Implementation) GoodCreate(ctx context.Context, in *pb.GoodCreateRequest) (*pb.GoodCreateResponse, error) {
+
 	if err := i.good.Add(ctx, &models.Good{
 		Name:          in.GetName(),
 		UnitOfMeasure: in.GetUnitOfMeasure(),
@@ -33,7 +34,6 @@ func (i *Implementation) GoodCreate(ctx context.Context, in *pb.GoodCreateReques
 func (i *Implementation) GoodGet(ctx context.Context, in *pb.GoodGetRequest) (*pb.GoodGetResponse, error) {
 	good, err := i.good.Get(ctx, in.GetCode())
 	if err != nil {
-
 		if errors.Is(err, storePkg.ErrNotExists) {
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
@@ -50,7 +50,6 @@ func (i *Implementation) GoodGet(ctx context.Context, in *pb.GoodGetRequest) (*p
 			UnitOfMeasure: good.UnitOfMeasure,
 			Country:       good.Country},
 	}, nil
-
 }
 
 func (i *Implementation) GoodUpdate(ctx context.Context, in *pb.GoodUpdateRequest) (*pb.GoodUpdateResponse, error) {
@@ -86,14 +85,12 @@ func (i *Implementation) GoodDelete(ctx context.Context, in *pb.GoodDeleteReques
 		if errors.Is(err, storePkg.ErrTimeout) {
 			return nil, status.Error(codes.DeadlineExceeded, err.Error())
 		}
-
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 	return &pb.GoodDeleteResponse{}, nil
 }
 
 func (i *Implementation) GoodList(stream pb.Catalog_GoodListServer) error {
-
 	for {
 		in, err := stream.Recv()
 		if err == io.EOF {
@@ -102,9 +99,7 @@ func (i *Implementation) GoodList(stream pb.Catalog_GoodListServer) error {
 		if err != nil {
 			return err
 		}
-
 		result := getGoodList(i.good, in.GetLimit(), in.GetOffset())
-
 		if err := stream.Send(result); err != nil {
 			return err
 		}

@@ -36,6 +36,7 @@ func init() {
 	Timeout = time.Second * 2
 
 	waitSv := make(chan struct{})
+	fmt.Println("Start grpc server")
 	go runTestGRPCServer(ctx, cfg, waitSv)
 	<-waitSv
 	conn, err := grpc.Dial(cfg.GrpcHost, grpc.WithInsecure(), grpc.WithTimeout(Timeout))

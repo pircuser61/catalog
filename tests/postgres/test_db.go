@@ -34,6 +34,7 @@ type Country struct {
 func NewTestDb(cfg *config.Config) *TestDB {
 	ctx := context.Background()
 
+	fmt.Println("Make migrations", cfg.DdConnectionString())
 	err := makeMigrations(ctx, cfg)
 	if err != nil {
 		panic("Make migration error: " + err.Error())
@@ -66,16 +67,16 @@ func (d *TestDB) Truncate(ctx context.Context, listTables string) {
 }
 
 func makeMigrations(ctx context.Context, cfg *config.Config) error {
+	const migrations = "./../migrations/"
+
 	db, err := sql.Open("postgres", cfg.DdConnectionString())
 	if err != nil {
 		return err
 	}
+	fmt.Println("Connected to ", cfg.DbName)
 	defer db.Close()
-	err = goose.Down(db, "./../migrations/")
-	if err != nil {
-		return err
-	}
-	return goose.Up(db, "./../migrations/")
+	_ = goose.Down(db, migrations) /* на пустой базе дает ошибку */
+	return goose.Up(db, migrations)
 }
 
 func (d *TestDB) GetFirstUnitOfMeasure(ctx context.Context, t *testing.T) *UnitOfMeasure {
