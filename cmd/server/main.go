@@ -18,7 +18,7 @@ import (
 	counters "gitlab.ozon.dev/pircuser61/catalog/internal/counters"
 	logger "gitlab.ozon.dev/pircuser61/catalog/internal/logger"
 	countryRepo "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/country/repository/postgre"
-	goodRepo "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/repository/postgre"
+	goodRepo "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good/repository/cache"
 	unitOfMeasureRepo "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/unit_of_measure/repository/postgre"
 	storePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage"
 	"go.uber.org/zap"
@@ -40,9 +40,7 @@ func main() {
 	}
 	defer closer.Close()
 
-	// NewLoggingTracer creates a new tracer that logs all span interactions
 	opentracing.SetGlobalTracer(tracer)
-
 	err = makeMigrations(ctx)
 	if err != nil {
 		logger.Panic("Make migration error:" + err.Error())
@@ -93,6 +91,8 @@ func runHttp(ctx context.Context) {
 	expvar.Publish("Total", &counters.RequestCount)
 	expvar.Publish("Success", &counters.SuccessCount)
 	expvar.Publish("Errors", &counters.ErrorCount)
+	expvar.Publish("Hit", &counters.CacheHit)
+	expvar.Publish("Miss", &counters.CacheMiss)
 
 	if err := http.ListenAndServe(config.HttpAddr, nil); err != nil {
 		logger.Panic("Http listen", zap.Error(err))

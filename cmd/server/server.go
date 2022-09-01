@@ -40,7 +40,7 @@ func runGRPCServer(ctx context.Context, store *storePkg.Core) {
 func counterInterceptor(ctx context.Context,
 	req interface{},
 	info *grpc.UnaryServerInfo,
-	handler grpc.UnaryHandler) (resp interface{}, err error) {
+	handler grpc.UnaryHandler) (interface{}, error) {
 	counters.Request()
 	result, err := handler(ctx, req)
 	if err == nil {

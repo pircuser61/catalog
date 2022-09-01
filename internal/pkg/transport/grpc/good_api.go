@@ -3,30 +3,80 @@ package grpc
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
+	"time"
 
+	"github.com/go-redis/redis"
 	pb "gitlab.ozon.dev/pircuser61/catalog/api"
+	"gitlab.ozon.dev/pircuser61/catalog/config"
+	logger "gitlab.ozon.dev/pircuser61/catalog/internal/logger"
 	"gitlab.ozon.dev/pircuser61/catalog/internal/pkg/core/good"
 	"gitlab.ozon.dev/pircuser61/catalog/internal/pkg/models"
 	storePkg "gitlab.ozon.dev/pircuser61/catalog/internal/pkg/storage"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
+var redisClient *redis.Client
+
+func init() {
+
+	redisClient = redis.NewClient(&redis.Options{
+		Addr:     config.RedisAddr,
+		DB:       config.RedisResponseDb,
+		Password: config.RedisPassword})
+}
+
+func isAsync(ctx context.Context) bool {
+
+	if md, ok := metadata.FromIncomingContext(ctx); ok {
+		strings := md.Get("mode")
+		if len(strings) > 0 && strings[0] == "async" {
+			return true
+		}
+	}
+	return false
+}
+
 func (i *Implementation) GoodCreate(ctx context.Context, in *pb.GoodCreateRequest) (*pb.GoodCreateResponse, error) {
 
-	if err := i.good.Add(ctx, &models.Good{
+	good := &models.Good{
 		Name:          in.GetName(),
 		UnitOfMeasure: in.GetUnitOfMeasure(),
 		Country:       in.GetCountry(),
-	}); err != nil {
-		if errors.Is(err, models.ErrValidation) {
-			return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+	if isAsync(ctx) {
+		token := fmt.Sprintf("%v", time.Now())
+		logger.Debug("Create async")
+		go func() {
+			ctx := context.Background()
+			time.Sleep(time.Second * 2)
+			err := i.good.Add(ctx, good)
+			var text string
+			if err == nil {
+				text = "Good created"
+			} else {
+				text = "Error: " + err.Error()
+			}
+
+			redisClient.Set(token, text, config.RedisResponseExpiration)
+		}()
+		md := metadata.Pairs("token", token)
+		grpc.SendHeader(ctx, md)
+	} else {
+		logger.Debug("Create ...")
+		if err := i.good.Add(ctx, good); err != nil {
+			if errors.Is(err, models.ErrValidation) {
+				return nil, status.Error(codes.InvalidArgument, err.Error())
+			}
+			if errors.Is(err, storePkg.ErrTimeout) {
+				return nil, status.Error(codes.DeadlineExceeded, err.Error())
+			}
+			return nil, status.Error(codes.Internal, err.Error())
 		}
-		if errors.Is(err, storePkg.ErrTimeout) {
-			return nil, status.Error(codes.DeadlineExceeded, err.Error())
-		}
-		return nil, status.Error(codes.Internal, err.Error())
 	}
 	return &pb.GoodCreateResponse{}, nil
 }
@@ -57,23 +107,39 @@ func (i *Implementation) GoodUpdate(ctx context.Context, in *pb.GoodUpdateReques
 	if inGood == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
-	if err := i.good.Update(ctx, &models.Good{
+
+	good := &models.Good{
 		Code:          inGood.GetCode(),
 		Name:          inGood.GetName(),
 		UnitOfMeasure: inGood.GetUnitOfMeasure(),
-		Country:       inGood.GetCountry()}); err != nil {
-		if errors.Is(err, models.ErrValidation) {
-			return nil, status.Error(codes.InvalidArgument, err.Error())
-		}
-		if errors.Is(err, storePkg.ErrNotExists) {
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-		if errors.Is(err, storePkg.ErrTimeout) {
-			return nil, status.Error(codes.DeadlineExceeded, err.Error())
-		}
-		return nil, status.Error(codes.Internal, err.Error())
-	}
+		Country:       inGood.GetCountry()}
 
+	if isAsync(ctx) {
+		go func() {
+			ctx := context.Background()
+			time.Sleep(time.Second * 2)
+			err := i.good.Update(ctx, good)
+			if err == nil {
+				redisClient.Publish("response", "done")
+			} else {
+				redisClient.Publish("response", "Error: "+err.Error())
+			}
+		}()
+	} else {
+
+		if err := i.good.Update(ctx, good); err != nil {
+			if errors.Is(err, models.ErrValidation) {
+				return nil, status.Error(codes.InvalidArgument, err.Error())
+			}
+			if errors.Is(err, storePkg.ErrNotExists) {
+				return nil, status.Error(codes.NotFound, err.Error())
+			}
+			if errors.Is(err, storePkg.ErrTimeout) {
+				return nil, status.Error(codes.DeadlineExceeded, err.Error())
+			}
+			return nil, status.Error(codes.Internal, err.Error())
+		}
+	}
 	return &pb.GoodUpdateResponse{}, nil
 }
 
