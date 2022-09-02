@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"time"
 
 	logger "gitlab.ozon.dev/pircuser61/catalog/internal/logger"
 	"go.uber.org/zap"
@@ -19,6 +20,13 @@ const (
 	Topic_error  = "errors"
 
 	JaegerHostPort = "localhost:6831"
+
+	RedisAddr               = "localhost:6379"
+	RedisGoodDb             = 0
+	RedisResponseDb         = 1
+	RedisPassword           = ""
+	RedisExpiration         = time.Minute * 1
+	RedisResponseExpiration = time.Second * 30
 )
 
 var (
